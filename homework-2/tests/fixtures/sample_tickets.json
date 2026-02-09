@@ -1,0 +1,283 @@
+[
+  {
+    "customer_id": "CUST-001",
+    "customer_email": "john.doe@example.com",
+    "customer_name": "John Doe",
+    "subject": "Cannot login to account",
+    "description": "I have been locked out of my account after 3 failed login attempts. The password reset link is not working either.",
+    "status": "new",
+    "tags": ["urgent", "account", "login"],
+    "metadata": {
+      "source": "web_form",
+      "browser": "Chrome 120",
+      "device_type": "desktop"
+    }
+  },
+  {
+    "customer_id": "CUST-002",
+    "customer_email": "jane.smith@example.com",
+    "customer_name": "Jane Smith",
+    "subject": "App crashes on startup",
+    "description": "The application crashes immediately upon launch. Error indicates memory allocation failure.",
+    "status": "new",
+    "tags": ["bug", "critical"],
+    "metadata": {
+      "source": "email",
+      "browser": null,
+      "device_type": "mobile"
+    }
+  },
+  {
+    "customer_id": "CUST-003",
+    "customer_email": "bob.wilson@example.com",
+    "customer_name": "Bob Wilson",
+    "subject": "Billing inquiry duplicate charge",
+    "description": "I was charged twice this month. Two identical charges on same day. Please refund the duplicate.",
+    "status": "new",
+    "tags": ["billing", "payment"],
+    "metadata": {
+      "source": "phone",
+      "browser": null,
+      "device_type": null
+    }
+  },
+  {
+    "customer_id": "CUST-004",
+    "customer_email": "alice.brown@example.com",
+    "customer_name": "Alice Brown",
+    "subject": "Feature request dark mode",
+    "description": "Would be nice to have dark mode option. Many users requesting this feature.",
+    "status": "new",
+    "tags": ["enhancement", "ui"],
+    "metadata": {
+      "source": "api",
+      "browser": "Firefox",
+      "device_type": "desktop"
+    }
+  },
+  {
+    "customer_id": "CUST-005",
+    "customer_email": "charlie.davis@example.com",
+    "customer_name": "Charlie Davis",
+    "subject": "Production system completely down",
+    "description": "CRITICAL: Production server offline. All customers unable to access service. Immediate action needed.",
+    "status": "new",
+    "tags": ["critical", "outage", "production"],
+    "metadata": {
+      "source": "email",
+      "browser": null,
+      "device_type": null
+    }
+  },
+  {
+    "customer_id": "CUST-006",
+    "customer_email": "diana.jones@example.com",
+    "customer_name": "Diana Jones",
+    "subject": "2FA setup failing repeatedly",
+    "description": "Cannot enable two-factor authentication. Setup fails at step 2 every time I try.",
+    "status": "new",
+    "tags": ["security", "2fa"],
+    "metadata": {
+      "source": "web_form",
+      "browser": "Safari",
+      "device_type": "desktop"
+    }
+  },
+  {
+    "customer_id": "CUST-007",
+    "customer_email": "eve.miller@example.com",
+    "customer_name": "Eve Miller",
+    "subject": "Credit card payment declined",
+    "description": "Payment was declined but no error message provided. What is the issue?",
+    "status": "new",
+    "tags": ["payment", "billing"],
+    "metadata": {
+      "source": "web_form",
+      "browser": "Chrome",
+      "device_type": "mobile"
+    }
+  },
+  {
+    "customer_id": "CUST-008",
+    "customer_email": "frank.garcia@example.com",
+    "customer_name": "Frank Garcia",
+    "subject": "CSV export produces corrupted files",
+    "description": "The CSV export feature creates files that cannot be opened. Recurring issue affecting business operations.",
+    "status": "new",
+    "tags": ["bug", "export"],
+    "metadata": {
+      "source": "email",
+      "browser": null,
+      "device_type": "desktop"
+    }
+  },
+  {
+    "customer_id": "CUST-009",
+    "customer_email": "grace.rodriguez@example.com",
+    "customer_name": "Grace Rodriguez",
+    "subject": "Enhancement bulk user management",
+    "description": "Could you add bulk user management? Currently very time-consuming to manage users.",
+    "status": "new",
+    "tags": ["enhancement", "admin"],
+    "metadata": {
+      "source": "api",
+      "browser": null,
+      "device_type": null
+    }
+  },
+  {
+    "customer_id": "CUST-010",
+    "customer_email": "henry.martinez@example.com",
+    "customer_name": "Henry Martinez",
+    "subject": "Account locked security breach",
+    "description": "My account has been locked due to suspected unauthorized access. How can I regain access?",
+    "status": "new",
+    "tags": ["security", "urgent"],
+    "metadata": {
+      "source": "email",
+      "browser": null,
+      "device_type": null
+    }
+  },
+  {
+    "customer_id": "CUST-011",
+    "customer_email": "iris.anderson@example.com",
+    "customer_name": "Iris Anderson",
+    "subject": "API documentation incorrect",
+    "description": "The API reference documentation is outdated and does not match actual endpoints.",
+    "status": "new",
+    "tags": ["documentation"],
+    "metadata": {
+      "source": "web_form",
+      "browser": "Edge",
+      "device_type": "desktop"
+    }
+  },
+  {
+    "customer_id": "CUST-012",
+    "customer_email": "jack.taylor@example.com",
+    "customer_name": "Jack Taylor",
+    "subject": "Request refund for subscription",
+    "description": "I want to request a full refund for my last subscription payment. Service not as expected.",
+    "status": "new",
+    "tags": ["refund", "billing"],
+    "metadata": {
+      "source": "email",
+      "browser": null,
+      "device_type": null
+    }
+  },
+  {
+    "customer_id": "CUST-013",
+    "customer_email": "kate.thomas@example.com",
+    "customer_name": "Kate Thomas",
+    "subject": "Severe performance degradation",
+    "description": "Application is extremely slow when loading large datasets. Takes 5+ minutes for basic operations.",
+    "status": "new",
+    "tags": ["performance", "bug"],
+    "metadata": {
+      "source": "web_form",
+      "browser": "Chrome",
+      "device_type": "desktop"
+    }
+  },
+  {
+    "customer_id": "CUST-014",
+    "customer_email": "liam.jackson@example.com",
+    "customer_name": "Liam Jackson",
+    "subject": "Password reset email not received",
+    "description": "I clicked reset password but never received the email confirmation link.",
+    "status": "new",
+    "tags": ["account", "password"],
+    "metadata": {
+      "source": "web_form",
+      "browser": "Safari",
+      "device_type": "mobile"
+    }
+  },
+  {
+    "customer_id": "CUST-015",
+    "customer_email": "mia.white@example.com",
+    "customer_name": "Mia White",
+    "subject": "Feature scheduling appointment",
+    "description": "Could you add appointment scheduling to the calendar module?",
+    "status": "new",
+    "tags": ["feature", "calendar"],
+    "metadata": {
+      "source": "api",
+      "browser": null,
+      "device_type": null
+    }
+  },
+  {
+    "customer_id": "CUST-016",
+    "customer_email": "noah.harris@example.com",
+    "customer_name": "Noah Harris",
+    "subject": "SECURITY: Potential SQL injection vulnerability",
+    "description": "We found a potential SQL injection vulnerability in the user search endpoint. Immediate patch needed.",
+    "status": "new",
+    "tags": ["security", "critical"],
+    "metadata": {
+      "source": "email",
+      "browser": null,
+      "device_type": null
+    }
+  },
+  {
+    "customer_id": "CUST-017",
+    "customer_email": "olivia.martin@example.com",
+    "customer_name": "Olivia Martin",
+    "subject": "Invoice charge discrepancy",
+    "description": "Invoice shows different charges than quoted. Please clarify the billing.",
+    "status": "new",
+    "tags": ["billing", "invoice"],
+    "metadata": {
+      "source": "email",
+      "browser": null,
+      "device_type": null
+    }
+  },
+  {
+    "customer_id": "CUST-018",
+    "customer_email": "peter.lee@example.com",
+    "customer_name": "Peter Lee",
+    "subject": "iOS app crashes between tabs",
+    "description": "The iOS app keeps crashing when switching between tabs. Very frustrating experience.",
+    "status": "new",
+    "tags": ["bug", "mobile", "ios"],
+    "metadata": {
+      "source": "email",
+      "browser": null,
+      "device_type": "mobile"
+    }
+  },
+  {
+    "customer_id": "CUST-019",
+    "customer_email": "quinn.clark@example.com",
+    "customer_name": "Quinn Clark",
+    "subject": "Feature integration Salesforce CRM",
+    "description": "Can you integrate with Salesforce CRM? Many enterprise customers would benefit.",
+    "status": "new",
+    "tags": ["feature", "integration"],
+    "metadata": {
+      "source": "web_form",
+      "browser": "Chrome",
+      "device_type": "desktop"
+    }
+  },
+  {
+    "customer_id": "CUST-020",
+    "customer_email": "rachel.lewis@example.com",
+    "customer_name": "Rachel Lewis",
+    "subject": "Account access successfully restored",
+    "description": "Thank you for restoring my account access quickly. Everything is working perfectly now.",
+    "status": "resolved",
+    "tags": ["resolved", "account"],
+    "metadata": {
+      "source": "email",
+      "browser": null,
+      "device_type": null
+    }
+  }
+]
+

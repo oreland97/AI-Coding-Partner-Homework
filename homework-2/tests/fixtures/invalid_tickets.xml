@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tickets>
+  <ticket>
+    <customer_id>CUST-001</customer_id>
+    <customer_email>invalid-email</customer_email>
+    <customer_name>John Doe</customer_name>
+    <subject>Short</subject>
+    <description>Too short</description>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-002</customer_id>
+    <customer_email>jane@example.com</customer_email>
+    <customer_name>Jane Smith</customer_name>
+    <subject>Missing description</subject>
+  </ticket>
+  <ticket>
+    <customer_email>bob@example.com</customer_email>
+    <customer_name>Bob Wilson</customer_name>
+    <subject>Missing customer ID</subject>
+    <description>Customer ID field is required but missing from this ticket</description>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-004</customer_id>
+    <customer_email>alice@</customer_email>
+    <customer_name>Alice Brown</customer_name>
+    <subject>Invalid email</subject>
+    <description>Email domain missing so format invalid</description>
+  </ticket>
+  <ticket>
+    <customer_id></customer_id>
+    <customer_email>empty@example.com</customer_email>
+    <customer_name>Empty ID</customer_name>
+    <subject>Empty customer ID</subject>
+    <description>Customer ID is required and cannot be empty or null</description>
+  </ticket>
+</tickets>
+
