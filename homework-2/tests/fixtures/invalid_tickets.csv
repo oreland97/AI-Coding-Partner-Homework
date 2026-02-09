@@ -1,0 +1,8 @@
+customer_id,customer_email,customer_name,subject,description,status
+CUST-INVALID,not-an-email,John Doe,Short,Too short description,invalid_status
+CUST-002,,Jane Smith,Issue title but no description,This is a very long text that exceeds the maximum character limit of 2000 characters. Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Additional text to exceed limit.,new
+,invalid@example.com,No ID,Subject line,Valid description here,new
+CUST-004,alice@,Alice Brown,Subject,Description text here,new
+CUST-005,charlie@example.com,Charlie Davis,This is a very long subject line that exceeds the maximum allowed character limit of 200 characters by a significant margin. It contains lots of unnecessary text just to make sure we exceed the limit,Valid description,new
+CUST-006,,Diana Jones,,Required description here,new
+

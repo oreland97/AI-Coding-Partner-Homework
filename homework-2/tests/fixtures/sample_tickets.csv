@@ -1,0 +1,52 @@
+customer_id,customer_email,customer_name,subject,description,status
+CUST-001,john.doe@example.com,John Doe,Cannot login to account,I've been locked out of my account after 3 failed login attempts. Password reset link not working.,new
+CUST-002,jane.smith@example.com,Jane Smith,App crashes on startup,The application crashes immediately upon launch on my Android device. Error message shows memory allocation failure.,new
+CUST-003,bob.wilson@example.com,Bob Wilson,Billing inquiry,Why was I charged twice this month? My credit card shows two identical charges on the same day.,new
+CUST-004,alice.brown@example.com,Alice Brown,Feature request dark mode,It would be nice to have a dark mode option in the settings. Many users are requesting this feature.,new
+CUST-005,charlie.davis@example.com,Charlie Davis,Production system down,CRITICAL: Our production server is completely offline. All customers unable to access the service.,new
+CUST-006,diana.jones@example.com,Diana Jones,2FA setup issue,I cannot enable two-factor authentication on my account. The setup keeps failing at step 2.,new
+CUST-007,eve.miller@example.com,Eve Miller,Payment declined,My credit card payment was declined but no error message was provided. What happened?,new
+CUST-008,frank.garcia@example.com,Frank Garcia,Bug in export feature,The CSV export function produces corrupted files that cannot be opened. This has been a recurring issue.,new
+CUST-009,grace.rodriguez@example.com,Grace Rodriguez,Enhancement suggestion,Could you add bulk user management capabilities? Currently it's very time-consuming.,new
+CUST-010,henry.martinez@example.com,Henry Martinez,Account locked after security breach,My account has been locked due to suspected unauthorized access. How can I regain access?,new
+CUST-011,iris.anderson@example.com,Iris Anderson,API documentation outdated,The API reference in your documentation is incorrect and doesn't match the actual endpoints.,new
+CUST-012,jack.taylor@example.com,Jack Taylor,Refund request,I want to request a full refund for my last subscription payment. Service was not as expected.,new
+CUST-013,kate.thomas@example.com,Kate Thomas,Performance issue,The application is extremely slow when loading large datasets. Takes 5+ minutes for basic operations.,new
+CUST-014,liam.jackson@example.com,Liam Jackson,Password reset not working,I clicked reset password but never received the email confirmation link.,new
+CUST-015,mia.white@example.com,Mia White,Feature request scheduling,Could you add appointment scheduling to the calendar module?,new
+CUST-016,noah.harris@example.com,Noah Harris,SECURITY: SQL injection vulnerability,We found a potential SQL injection vulnerability in the user search endpoint.,new
+CUST-017,olivia.martin@example.com,Olivia Martin,Invoice discrepancy,The invoice shows different charges than what I was quoted. Please clarify the billing.,new
+CUST-018,peter.lee@example.com,Peter Lee,Mobile app crashes,The iOS app keeps crashing when switching between tabs. Very frustrating experience.,new
+CUST-019,quinn.clark@example.com,Quinn Clark,Integration request,Can you integrate with Salesforce CRM? Many enterprise customers would benefit.,new
+CUST-020,rachel.lewis@example.com,Rachel Lewis,Account access restored,Thank you for restoring my account access. Everything is working now.,new
+CUST-021,sam.walker@example.com,Sam Walker,Cannot upload files,File upload feature returns 'file too large' error even for small PDFs.,new
+CUST-022,tina.hall@example.com,Tina Hall,Subscription cancellation,I want to cancel my subscription immediately. How do I proceed?,new
+CUST-023,umar.young@example.com,Umar Young,Defect in reporting module,The monthly report generation fails silently without any error notification.,new
+CUST-024,vanessa.king@example.com,Vanessa King,UI improvement suggestion,The navigation menu could be more intuitive. Users often get confused.,new
+CUST-025,william.wright@example.com,William Wright,Account locked critical,I cannot access my account. This is blocking critical business operations.,new
+CUST-026,xena.lopez@example.com,Xena Lopez,Email notifications broken,I'm not receiving email notifications despite enabling them in settings.,new
+CUST-027,yusuf.hill@example.com,Yusuf Hill,Discount code not working,The promotional code provided isn't being accepted at checkout.,new
+CUST-028,zara.scott@example.com,Zara Scott,Data export issue,Unable to export my account data. Error message mentions database connection timeout.,new
+CUST-029,aaron.green@example.com,Aaron Green,Feature enhancement,Add the ability to save filter preferences for recurring searches.,new
+CUST-030,bella.adams@example.com,Bella Adams,Critical bug urgent,The bulk import feature is corrupting existing data. URGENT: Production is impacted.,new
+CUST-031,chris.nelson@example.com,Chris Nelson,2FA disabled mysteriously,Someone disabled my two-factor authentication without my authorization.,new
+CUST-032,diana.carter@example.com,Diana Carter,Refund for defective service,The feature I paid for isn't working as described. Request full refund.,new
+CUST-033,ethan.mitchell@example.com,Ethan Mitchell,API rate limiting issue,Our integration keeps hitting rate limits unexpectedly. Need guidance.,new
+CUST-034,fiona.perez@example.com,Fiona Perez,Can't reset password,The password reset process appears broken. No reset link received.,new
+CUST-035,george.roberts@example.com,George Roberts,Enhancement request tagging,Please add ability to tag tickets for better organization.,new
+CUST-036,hannah.phillips@example.com,Hannah Phillips,Production outage blocking,The system is completely down. This is blocking all operations.,new
+CUST-037,ian.campbell@example.com,Ian Campbell,Email verification failed,Cannot complete email verification for new account creation.,new
+CUST-038,julia.parker@example.com,Julia Parker,Payment stuck pending,My payment has been pending for 3 days. When will it process?,new
+CUST-039,kevin.evans@example.com,Kevin Evans,Bug report reproduction steps,Click login → enter password → submit → application freezes indefinitely.,new
+CUST-040,laura.edwards@example.com,Laura Edwards,Feature request customization,Allow custom themes and branding options for enterprise customers.,new
+CUST-041,marcus.collins@example.com,Marcus Collins,Session timeout too aggressive,I get logged out after just 5 minutes of inactivity. Too short.,new
+CUST-042,natalie.stewart@example.com,Natalie Stewart,Account recovery blocked,I cannot verify my identity to recover my locked account.,new
+CUST-043,oscar.sanchez@example.com,Oscar Sanchez,Bug import failing,CSV import process fails silently without error reporting.,new
+CUST-044,patricia.morris@example.com,Patricia Morris,Enhancement mobile first,The mobile experience needs significant improvement.,new
+CUST-045,quinn.rogers@example.com,Quinn Rogers,Critical security breach,Unauthorized access detected on my account. Immediate action needed.,new
+CUST-046,rachel.morgan@example.com,Rachel Morgan,Cannot login anymore,After update yesterday I cannot login. Says credentials invalid.,new
+CUST-047,robert.bell@example.com,Robert Bell,Invoice formatting issue,PDF invoices have formatting problems making them hard to read.,new
+CUST-048,sarah.murphy@example.com,Sarah Murphy,Feature suggestion collaboration,Add real-time collaboration features for team projects.,new
+CUST-049,thomas.bailey@example.com,Thomas Bailey,System performance degradation,Application performance has gotten much worse over the last week.,new
+CUST-050,ursula.rivera@example.com,Ursula Rivera,Access denied error recurring,Getting 'access denied' errors on pages I should have permission to.,new
+
