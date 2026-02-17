@@ -1,0 +1,31 @@
+[
+  {
+    "customer_id": "CUST-001",
+    "customer_email": "invalid-email",
+    "customer_name": "John Doe",
+    "subject": "Short",
+    "description": "Too short"
+  },
+  {
+    "customer_id": "CUST-002",
+    "customer_email": "jane@example.com",
+    "customer_name": "Jane Smith",
+    "subject": "Missing description",
+    "description": null
+  },
+  {
+    "customer_id": null,
+    "customer_email": "bob@example.com",
+    "customer_name": "Bob Wilson",
+    "subject": "No customer ID",
+    "description": "This is a valid description that meets the minimum length requirement"
+  },
+  {
+    "customer_id": "CUST-004",
+    "customer_email": "alice@",
+    "customer_name": "Alice Brown",
+    "subject": "Invalid email format",
+    "description": "Email domain is missing which makes it invalid"
+  }
+]
+

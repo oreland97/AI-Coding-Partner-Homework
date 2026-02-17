@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tickets>
+  <ticket>
+    <customer_id>CUST-001</customer_id>
+    <customer_email>john.doe@example.com</customer_email>
+    <customer_name>John Doe</customer_name>
+    <subject>Cannot login to account</subject>
+    <description>I have been locked out after 3 failed login attempts. Password reset not working.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-002</customer_id>
+    <customer_email>jane.smith@example.com</customer_email>
+    <customer_name>Jane Smith</customer_name>
+    <subject>App crashes on startup</subject>
+    <description>Application crashes immediately on launch with memory allocation error.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-003</customer_id>
+    <customer_email>bob.wilson@example.com</customer_email>
+    <customer_name>Bob Wilson</customer_name>
+    <subject>Billing inquiry duplicate charge</subject>
+    <description>Charged twice this month. Two identical charges. Please refund the duplicate.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-004</customer_id>
+    <customer_email>alice.brown@example.com</customer_email>
+    <customer_name>Alice Brown</customer_name>
+    <subject>Feature request dark mode</subject>
+    <description>Would be nice to have dark mode. Many users requesting this feature.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-005</customer_id>
+    <customer_email>charlie.davis@example.com</customer_email>
+    <customer_name>Charlie Davis</customer_name>
+    <subject>Production system down urgent</subject>
+    <description>CRITICAL: Production server offline. All customers unable to access service.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-006</customer_id>
+    <customer_email>diana.jones@example.com</customer_email>
+    <customer_name>Diana Jones</customer_name>
+    <subject>2FA setup fails repeatedly</subject>
+    <description>Cannot enable two-factor authentication. Setup fails at step 2.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-007</customer_id>
+    <customer_email>eve.miller@example.com</customer_email>
+    <customer_name>Eve Miller</customer_name>
+    <subject>Credit card payment declined</subject>
+    <description>Payment was declined with no error message. What is the issue?</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-008</customer_id>
+    <customer_email>frank.garcia@example.com</customer_email>
+    <customer_name>Frank Garcia</customer_name>
+    <subject>Bug CSV export corrupted files</subject>
+    <description>CSV export creates corrupted files that cannot be opened.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-009</customer_id>
+    <customer_email>grace.rodriguez@example.com</customer_email>
+    <customer_name>Grace Rodriguez</customer_name>
+    <subject>Enhancement bulk user management</subject>
+    <description>Could you add bulk user management capability?</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-010</customer_id>
+    <customer_email>henry.martinez@example.com</customer_email>
+    <customer_name>Henry Martinez</customer_name>
+    <subject>Account locked security breach</subject>
+    <description>Account locked due to suspected unauthorized access. How to regain access?</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-011</customer_id>
+    <customer_email>iris.anderson@example.com</customer_email>
+    <customer_name>Iris Anderson</customer_name>
+    <subject>API documentation incorrect</subject>
+    <description>API reference documentation is outdated and incorrect.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-012</customer_id>
+    <customer_email>jack.taylor@example.com</customer_email>
+    <customer_name>Jack Taylor</customer_name>
+    <subject>Request refund for subscription</subject>
+    <description>Request full refund for subscription. Service not as expected.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-013</customer_id>
+    <customer_email>kate.thomas@example.com</customer_email>
+    <customer_name>Kate Thomas</customer_name>
+    <subject>Severe performance degradation</subject>
+    <description>Application extremely slow. Takes 5+ minutes for basic operations.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-014</customer_id>
+    <customer_email>liam.jackson@example.com</customer_email>
+    <customer_name>Liam Jackson</customer_name>
+    <subject>Password reset email not received</subject>
+    <description>Clicked reset password but never received email confirmation link.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-015</customer_id>
+    <customer_email>mia.white@example.com</customer_email>
+    <customer_name>Mia White</customer_name>
+    <subject>Feature scheduling appointment</subject>
+    <description>Could you add appointment scheduling to calendar module?</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-016</customer_id>
+    <customer_email>noah.harris@example.com</customer_email>
+    <customer_name>Noah Harris</customer_name>
+    <subject>SECURITY SQL injection vulnerability</subject>
+    <description>Potential SQL injection vulnerability in user search endpoint. Immediate patch needed.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-017</customer_id>
+    <customer_email>olivia.martin@example.com</customer_email>
+    <customer_name>Olivia Martin</customer_name>
+    <subject>Invoice charge discrepancy</subject>
+    <description>Invoice shows different charges than quoted.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-018</customer_id>
+    <customer_email>peter.lee@example.com</customer_email>
+    <customer_name>Peter Lee</customer_name>
+    <subject>iOS app crashes between tabs</subject>
+    <description>iOS app crashes when switching between tabs.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-019</customer_id>
+    <customer_email>quinn.clark@example.com</customer_email>
+    <customer_name>Quinn Clark</customer_name>
+    <subject>Feature integration Salesforce CRM</subject>
+    <description>Can you integrate with Salesforce CRM? Enterprise customers would benefit.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-020</customer_id>
+    <customer_email>rachel.lewis@example.com</customer_email>
+    <customer_name>Rachel Lewis</customer_name>
+    <subject>Account access successfully restored</subject>
+    <description>Thank you for restoring account access. Everything working perfectly.</description>
+    <status>resolved</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-021</customer_id>
+    <customer_email>sam.walker@example.com</customer_email>
+    <customer_name>Sam Walker</customer_name>
+    <subject>Cannot upload files error</subject>
+    <description>File upload feature returns too large error for small PDFs.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-022</customer_id>
+    <customer_email>tina.hall@example.com</customer_email>
+    <customer_name>Tina Hall</customer_name>
+    <subject>Subscription cancellation request</subject>
+    <description>I want to cancel my subscription immediately. How to proceed?</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-023</customer_id>
+    <customer_email>umar.young@example.com</customer_email>
+    <customer_name>Umar Young</customer_name>
+    <subject>Bug report generation fails</subject>
+    <description>Monthly report generation fails silently without error notification.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-024</customer_id>
+    <customer_email>vanessa.king@example.com</customer_email>
+    <customer_name>Vanessa King</customer_name>
+    <subject>UI improvement suggestion navigation</subject>
+    <description>Navigation menu could be more intuitive. Users often confused.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-025</customer_id>
+    <customer_email>william.wright@example.com</customer_email>
+    <customer_name>William Wright</customer_name>
+    <subject>Account locked critical business</subject>
+    <description>Cannot access account. This is blocking critical business operations.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-026</customer_id>
+    <customer_email>xena.lopez@example.com</customer_email>
+    <customer_name>Xena Lopez</customer_name>
+    <subject>Email notifications broken</subject>
+    <description>Not receiving email notifications despite enabling them in settings.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-027</customer_id>
+    <customer_email>yusuf.hill@example.com</customer_email>
+    <customer_name>Yusuf Hill</customer_name>
+    <subject>Discount code not working</subject>
+    <description>Promotional code not being accepted at checkout.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-028</customer_id>
+    <customer_email>zara.scott@example.com</customer_email>
+    <customer_name>Zara Scott</customer_name>
+    <subject>Data export issue database timeout</subject>
+    <description>Unable to export account data. Database connection timeout error.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-029</customer_id>
+    <customer_email>aaron.green@example.com</customer_email>
+    <customer_name>Aaron Green</customer_name>
+    <subject>Feature enhancement save filters</subject>
+    <description>Add ability to save filter preferences for recurring searches.</description>
+    <status>new</status>
+  </ticket>
+  <ticket>
+    <customer_id>CUST-030</customer_id>
+    <customer_email>bella.adams@example.com</customer_email>
+    <customer_name>Bella Adams</customer_name>
+    <subject>Critical bug urgent production</subject>
+    <description>Bulk import feature corrupting existing data. Production impacted. URGENT.</description>
+    <status>new</status>
+  </ticket>
+</tickets>
+
