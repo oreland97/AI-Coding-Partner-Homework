@@ -49,15 +49,16 @@ Build a secure, compliant virtual card management system that enables users to c
 ## Implementation Notes
 
 ### Technology Stack
-- **Backend**: Python 3.11+ with FastAPI framework
+- **Backend**: Node.js 18+ with Express.js framework and TypeScript 5.0+
 - **Database**: PostgreSQL 15+ with pgcrypto extension
+- **ORM**: Prisma 5+ for type-safe database access
 - **Cache**: Redis 7+ for session and metadata caching
 - **Message Queue**: RabbitMQ or AWS SQS for async processing
 - **Monitoring**: Prometheus + Grafana for metrics
-- **Logging**: ELK Stack (Elasticsearch, Logstash, Kibana)
+- **Logging**: Winston + ELK Stack (Elasticsearch, Logstash, Kibana)
 
 ### Data Handling Standards
-- **Monetary Values**: Use `Decimal` type with 2 decimal precision (never float)
+- **Monetary Values**: Use `decimal.js` library with 2 decimal precision (never native Number)
 - **Currency Codes**: ISO 4217 standard (USD, EUR, GBP, etc.)
 - **Timestamps**: UTC timezone, ISO 8601 format
 - **Card Numbers**: Store only last 4 digits + token reference
@@ -67,8 +68,8 @@ Build a secure, compliant virtual card management system that enables users to c
 - **Authentication**: OAuth 2.0 + JWT with RSA-256 signing
 - **Authorization**: Role-based access control (RBAC) with least privilege
 - **API Rate Limiting**: 100 requests/minute per user, 1000/minute per organization
-- **Input Validation**: Strict schema validation with Pydantic models
-- **SQL Injection Prevention**: Use parameterized queries exclusively
+- **Input Validation**: Strict schema validation with Zod or Joi
+- **SQL Injection Prevention**: Use Prisma parameterized queries exclusively
 - **Secrets Management**: Store in AWS Secrets Manager or HashiCorp Vault
 
 ### Compliance Constraints
@@ -79,10 +80,10 @@ Build a secure, compliant virtual card management system that enables users to c
 - **Audit Trail**: Every operation must log: who, what, when, where, why
 
 ### Testing Standards
-- **Unit Test Coverage**: Minimum 90%
-- **Integration Tests**: All API endpoints with real database
+- **Unit Test Coverage**: Minimum 90% (Jest + ts-jest)
+- **Integration Tests**: All API endpoints with real database (Supertest)
 - **Security Tests**: OWASP Top 10 vulnerability scanning
-- **Performance Tests**: Load testing with 10k concurrent users
+- **Performance Tests**: Load testing with 10k concurrent users (k6 or Artillery)
 - **Compliance Tests**: Automated PCI-DSS requirement validation
 
 ---
@@ -154,30 +155,31 @@ Build a secure, compliant virtual card management system that enables users to c
 
 **What prompt would you run to complete this task?**
 ```
-Create PostgreSQL database schema for virtual card management with tables:
-virtual_cards, card_transactions, card_limits, card_audit_log, fraud_alerts.
+Create Prisma schema for virtual card management with models:
+VirtualCard, CardTransaction, CardLimit, CardAuditLog, FraudAlert.
 Use pgcrypto for field-level encryption. Follow PCI-DSS: never store full PAN or CVV.
-Add indexes for performance, foreign keys for integrity, triggers for audit logging.
+Add indexes for performance, relations for integrity.
 ```
 
 **What file do you want to CREATE or UPDATE?**
-- `src/database/migrations/001_create_virtual_cards_schema.sql`
-- `src/models/card.py`
+- `prisma/schema.prisma`
+- `prisma/migrations/001_create_virtual_cards_schema/migration.sql`
+- `src/types/card.ts`
 
 **What function do you want to CREATE or UPDATE?**
-- `VirtualCard` model class
-- `CardTransaction` model class
-- `CardLimit` model class
-- `CardAuditLog` model class
+- `VirtualCard` Prisma model
+- `CardTransaction` Prisma model
+- `CardLimit` Prisma model
+- `CardAuditLog` Prisma model
 
 **What are details you want to add to drive the code changes?**
-- Use UUID for primary keys
-- Encrypt `card_number_encrypted` field using pgcrypto
-- Store only last 4 digits in `card_last_four`
-- Add `card_status` enum: ACTIVE, FROZEN, CANCELLED, EXPIRED
-- Include `spending_limit_daily`, `spending_limit_monthly` as Decimal(12,2)
-- Add merchant_category fields as JSONB
-- Include audit trigger for state changes
+- Use UUID for primary keys (`@id @default(uuid())`)
+- Encrypt `cardNumberEncrypted` field using pgcrypto
+- Store only last 4 digits in `cardLastFour`
+- Add `cardStatus` enum: ACTIVE, FROZEN, CANCELLED, EXPIRED
+- Include `spendingLimitDaily`, `spendingLimitMonthly` as Decimal(12,2)
+- Add merchantCategory fields as Json type
+- Create TypeScript interfaces matching Prisma types
 
 ---
 
@@ -185,30 +187,30 @@ Add indexes for performance, foreign keys for integrity, triggers for audit logg
 
 **What prompt would you run to complete this task?**
 ```
-Create FastAPI POST endpoint /api/v1/cards that creates virtual cards.
+Create Express.js POST endpoint /api/v1/cards that creates virtual cards.
 Workflow: Validate auth & KYC -> Check card limit -> Validate limits ->
 Call processor API -> Encrypt & store card -> Create audit log -> Trigger webhook.
 Include idempotency, comprehensive validation, rate limiting.
 ```
 
 **What file do you want to CREATE or UPDATE?**
-- `src/api/v1/endpoints/cards.py`
-- `src/services/card_service.py`
-- `src/schemas/card_schemas.py`
+- `src/routes/cards.ts`
+- `src/services/cardService.ts`
+- `src/schemas/cardSchemas.ts`
 
 **What function do you want to CREATE or UPDATE?**
-- `create_virtual_card()` endpoint
-- `CardService.issue_card()` business logic
-- `CardCreateRequest` and `CardResponse` Pydantic schemas
+- `createVirtualCard()` route handler
+- `CardService.issueCard()` business logic
+- `CardCreateRequest` and `CardResponse` Zod schemas
 
 **What are details you want to add to drive the code changes?**
-- Validate spending limits (daily >= 1.00, <= 50000.00)
+- Validate spending limits (daily >= 1.00, <= 50000.00) using Zod
 - Validate ISO 4217 currency
 - Check user KYC status (VERIFIED required)
 - Generate idempotency key from headers
 - Call payment processor with retry logic (max 3 attempts)
 - Encrypt PAN before database insert
-- Rate limit: max 5 card creations per hour per user
+- Rate limit: max 5 card creations per hour per user (express-rate-limit)
 
 ---
 
@@ -216,27 +218,27 @@ Include idempotency, comprehensive validation, rate limiting.
 
 **What prompt would you run to complete this task?**
 ```
-Create endpoints for freezing/unfreezing virtual cards:
-POST /api/v1/cards/{card_id}/freeze
-POST /api/v1/cards/{card_id}/unfreeze
+Create Express.js endpoints for freezing/unfreezing virtual cards:
+POST /api/v1/cards/:cardId/freeze
+POST /api/v1/cards/:cardId/unfreeze
 Implement state machine: ACTIVE <-> FROZEN (CANCELLED, EXPIRED not allowed).
 Include authorization, audit logging, webhook events, processor sync.
 ```
 
 **What file do you want to CREATE or UPDATE?**
-- `src/api/v1/endpoints/cards.py`
-- `src/services/card_service.py`
+- `src/routes/cards.ts`
+- `src/services/cardService.ts`
 
 **What function do you want to CREATE or UPDATE?**
-- `freeze_card()` endpoint
-- `unfreeze_card()` endpoint
-- `CardService.update_card_status()` business logic
+- `freezeCard()` route handler
+- `unfreezeCard()` route handler
+- `CardService.updateCardStatus()` business logic
 
 **What are details you want to add to drive the code changes?**
 - Verify card ownership (prevent unauthorized access)
 - Validate state machine transitions
 - Call payment processor API to sync
-- Handle concurrent updates with optimistic locking
+- Handle concurrent updates with optimistic locking (Prisma @version)
 - Return 409 Conflict if already in target state
 
 ---
@@ -245,7 +247,7 @@ Include authorization, audit logging, webhook events, processor sync.
 
 **What prompt would you run to complete this task?**
 ```
-Create webhook endpoint for real-time transaction authorization:
+Create Express.js webhook endpoint for real-time transaction authorization:
 POST /api/v1/webhooks/authorize-transaction
 Check: card status (ACTIVE), spending limits (daily/monthly/per-tx),
 merchant restrictions, fraud detection rules.
@@ -253,24 +255,24 @@ Response: APPROVE or DECLINE within 100ms in <50ms target.
 ```
 
 **What file do you want to CREATE or UPDATE?**
-- `src/api/v1/webhooks/authorization.py`
-- `src/services/authorization_service.py`
-- `src/services/fraud_detection_service.py`
+- `src/routes/webhooks.ts`
+- `src/services/authorizationService.ts`
+- `src/services/fraudDetectionService.ts`
 
 **What function do you want to CREATE or UPDATE?**
-- `authorize_transaction()` webhook endpoint
+- `authorizeTransaction()` webhook handler
 - `AuthorizationService.evaluate()` business logic
-- `FraudDetectionService.check_transaction()` fraud rules
+- `FraudDetectionService.checkTransaction()` fraud rules
 
 **What are details you want to add to drive the code changes?**
-- Verify webhook signature using HMAC-SHA256
-- Fetch card details from Redis cache (fallback to database)
-- Check card status == ACTIVE
-- Validate amount <= per_transaction_limit
+- Verify webhook signature using HMAC-SHA256 (crypto module)
+- Fetch card details from Redis cache (fallback to Prisma)
+- Check card status === CardStatus.ACTIVE
+- Validate amount <= perTransactionLimit
 - Calculate daily/monthly spend and check limits
-- Check merchant_category against whitelist/blacklist
+- Check merchantCategory against whitelist/blacklist
 - Run fraud rules: velocity check (max 5 tx/hour), geographic anomaly
-- Cache authorization decisions for 5 minutes
+- Cache authorization decisions for 5 minutes (ioredis)
 
 ---
 
@@ -278,27 +280,27 @@ Response: APPROVE or DECLINE within 100ms in <50ms target.
 
 **What prompt would you run to complete this task?**
 ```
-Create CRUD endpoints for card spending limits:
-GET /api/v1/cards/{card_id}/limits
-PUT /api/v1/cards/{card_id}/limits
+Create Express.js CRUD endpoints for card spending limits:
+GET /api/v1/cards/:cardId/limits
+PUT /api/v1/cards/:cardId/limits
 Allow setting: daily, monthly, per-transaction limits + merchant restrictions.
 Include validation, audit logging, real-time enforcement, processor sync.
 ```
 
 **What file do you want to CREATE or UPDATE?**
-- `src/api/v1/endpoints/card_limits.py`
-- `src/services/card_service.py`
+- `src/routes/cardLimits.ts`
+- `src/services/cardService.ts`
 
 **What function do you want to CREATE or UPDATE?**
-- `get_card_limits()` endpoint
-- `update_card_limits()` endpoint
-- `CardService.update_limits()` business logic
+- `getCardLimits()` route handler
+- `updateCardLimits()` route handler
+- `CardService.updateLimits()` business logic
 
 **What are details you want to add to drive the code changes?**
-- Validate limits positive with 2 decimal places
-- Validate daily_limit <= monthly_limit
-- Validate per_transaction_limit <= daily_limit
-- Update atomically (database transaction)
+- Validate limits positive with 2 decimal places (Zod refinements)
+- Validate dailyLimit <= monthlyLimit
+- Validate perTransactionLimit <= dailyLimit
+- Update atomically (Prisma $transaction)
 - Invalidate Redis cache for card metadata
 - Create audit log with old/new values
 - Sync with payment processor
@@ -309,27 +311,27 @@ Include validation, audit logging, real-time enforcement, processor sync.
 
 **What prompt would you run to complete this task?**
 ```
-Create GET endpoint /api/v1/cards/{card_id}/transactions for transaction history.
+Create Express.js GET endpoint /api/v1/cards/:cardId/transactions for transaction history.
 Support: date range filters, status filters, merchant category filters,
-cursor-based pagination, sorting by transaction_date DESC.
+cursor-based pagination, sorting by transactionDate DESC.
 Include merchant enrichment, optimize for large datasets (millions of transactions).
 ```
 
 **What file do you want to CREATE or UPDATE?**
-- `src/api/v1/endpoints/transactions.py`
-- `src/services/transaction_service.py`
+- `src/routes/transactions.ts`
+- `src/services/transactionService.ts`
 
 **What function do you want to CREATE or UPDATE?**
-- `get_card_transactions()` endpoint
-- `TransactionService.list_transactions()` business logic
+- `getCardTransactions()` route handler
+- `TransactionService.listTransactions()` business logic
 
 **What are details you want to add to drive the code changes?**
-- Use cursor-based pagination (keyset pagination)
+- Use cursor-based pagination (Prisma cursor)
 - Default page size: 50, max: 200 transactions
 - Filter by date range using indexed columns
 - Include merchant details (name, category, location)
 - Mask sensitive merchant data per PCI-DSS
-- Return pagination metadata (next_cursor, has_more)
+- Return pagination metadata (nextCursor, hasMore)
 - Support CSV export (separate endpoint)
 - Cache frequent queries in Redis (5 min TTL)
 
@@ -339,28 +341,28 @@ Include merchant enrichment, optimize for large datasets (millions of transactio
 
 **What prompt would you run to complete this task?**
 ```
-Create endpoint DELETE /api/v1/cards/{card_id} for card cancellation.
+Create Express.js endpoint DELETE /api/v1/cards/:cardId for card cancellation.
 Workflow: Verify authorization -> Check pending transactions ->
 Update status to CANCELLED -> Sync with processor -> Audit log.
 Support soft delete (status change) and hard delete (GDPR right to be forgotten).
 ```
 
 **What file do you want to CREATE or UPDATE?**
-- `src/api/v1/endpoints/cards.py`
-- `src/services/card_service.py`
-- `src/services/deletion_service.py`
+- `src/routes/cards.ts`
+- `src/services/cardService.ts`
+- `src/services/deletionService.ts`
 
 **What function do you want to CREATE or UPDATE?**
-- `cancel_card()` endpoint
+- `cancelCard()` route handler
 - `CardService.cancel()` business logic
-- `DeletionService.delete_user_data()` GDPR compliance
+- `DeletionService.deleteUserData()` GDPR compliance
 
 **What are details you want to add to drive the code changes?**
 - Verify user owns the card
 - Check for pending transactions (decline if exists)
 - Update status to CANCELLED (soft delete)
 - Call payment processor API
-- For GDPR deletion: schedule async job after 90-day retention
+- For GDPR deletion: schedule async job after 90-day retention (BullMQ)
 - Keep audit logs permanently (regulatory requirement)
 
 ---
@@ -369,28 +371,28 @@ Support soft delete (status change) and hard delete (GDPR right to be forgotten)
 
 **What prompt would you run to complete this task?**
 ```
-Create fraud detection service monitoring transactions in real-time.
+Create TypeScript fraud detection service monitoring transactions in real-time.
 Implement rules: velocity check (max 10 tx/hour), amount anomaly (>3x average),
 geographic anomaly, merchant category anomaly, duplicate transaction (5 min window).
-Auto-freeze cards when fraud_score >= 70, generate alerts, trigger webhooks.
+Auto-freeze cards when fraudScore >= 70, generate alerts, trigger webhooks.
 ```
 
 **What file do you want to CREATE or UPDATE?**
-- `src/services/fraud_detection_service.py`
-- `src/models/fraud_alert.py`
-- `src/api/v1/endpoints/fraud_alerts.py`
+- `src/services/fraudDetectionService.ts`
+- `src/types/fraudAlert.ts`
+- `src/routes/fraudAlerts.ts`
 
 **What function do you want to CREATE or UPDATE?**
-- `FraudDetectionService.evaluate_transaction()` main fraud check
-- `FraudDetectionService.calculate_risk_score()` scoring algorithm
-- `get_fraud_alerts()` endpoint for user review
+- `FraudDetectionService.evaluateTransaction()` main fraud check
+- `FraudDetectionService.calculateRiskScore()` scoring algorithm
+- `getFraudAlerts()` route handler for user review
 
 **What are details you want to add to drive the code changes?**
 - Calculate fraud score as weighted sum (0-100 scale)
 - Rule weights: velocity (20), amount anomaly (30), geographic (25), category (15), duplicate (10)
-- Auto-freeze if fraud_score >= 70
-- Create fraud_alert record with details and risk_score
-- Send push notification to user
+- Auto-freeze if fraudScore >= 70
+- Create FraudAlert record with details and riskScore
+- Send push notification to user (Firebase or similar)
 - Allow user to confirm fraud (keep frozen) or dispute (unfreeze)
 
 ---
@@ -399,27 +401,27 @@ Auto-freeze cards when fraud_score >= 70, generate alerts, trigger webhooks.
 
 **What prompt would you run to complete this task?**
 ```
-Create webhook notification system for real-time events:
+Create TypeScript webhook notification system for real-time events:
 card.created, card.frozen, card.unfrozen, card.cancelled,
-transaction.authorized, transaction.declined, card.limits_updated, card.fraud_detected.
+transaction.authorized, transaction.declined, card.limitsUpdated, card.fraudDetected.
 Implement reliable delivery: retry with exponential backoff (max 5 retries),
 HMAC-SHA256 signing, URL verification, subscription filtering.
 ```
 
 **What file do you want to CREATE or UPDATE?**
-- `src/services/webhook_service.py`
-- `src/models/webhook_subscription.py`
-- `src/api/v1/endpoints/webhooks.py`
-- `src/workers/webhook_worker.py`
+- `src/services/webhookService.ts`
+- `src/types/webhookSubscription.ts`
+- `src/routes/webhooks.ts`
+- `src/workers/webhookWorker.ts`
 
 **What function do you want to CREATE or UPDATE?**
-- `WebhookService.send_event()` main event sender
-- `WebhookService.retry_failed()` retry logic
-- `create_webhook_subscription()` endpoint
-- `WebhookWorker.process_event_queue()` background worker
+- `WebhookService.sendEvent()` main event sender
+- `WebhookService.retryFailed()` retry logic
+- `createWebhookSubscription()` route handler
+- `WebhookWorker.processEventQueue()` background worker (BullMQ)
 
 **What are details you want to add to drive the code changes?**
-- Sign webhook: `HMAC-SHA256(secret, payload_json)`
+- Sign webhook: `HMAC-SHA256(secret, JSON.stringify(payload))`
 - Retry schedule: 1 min, 5 min, 15 min, 1 hour, 6 hours
 - Mark subscription inactive after 5 consecutive failures
 - Rate limit: max 100 events/second per subscription
@@ -430,7 +432,7 @@ HMAC-SHA256 signing, URL verification, subscription filtering.
 
 **What prompt would you run to complete this task?**
 ```
-Create compliance reporting endpoints for auditors:
+Create Express.js compliance reporting endpoints for auditors:
 - Monthly transaction summary by card
 - Card lifecycle report (created, frozen, cancelled)
 - Fraud detection summary
@@ -449,15 +451,15 @@ Require COMPLIANCE_OFFICER role, tamper-proof reports, 7-year retention.
 - `generateTransactionReport()` route handler
 - `generateAuditLogExport()` route handler
 - `ComplianceService.generatePciReport()` PCI-DSS
-- `ReportGenerator.createPdf()` PDF generation (use PDFKit or Puppeteer)
+- `ReportGenerator.createPdf()` PDF generation (PDFKit or Puppeteer)
 
 **What are details you want to add to drive the code changes?**
 - Require COMPLIANCE_OFFICER role for all endpoints
-- Sign PDF reports with X.509 certificate (digital signature)
+- Sign PDF reports with X.509 certificate (node-forge)
 - Include report metadata (generation timestamp, report ID, data range)
 - Mask sensitive data (only last 4 digits of card)
-- Generate reports asynchronously for large datasets
-- Store in S3 with 7-year retention
+- Generate reports asynchronously for large datasets (BullMQ)
+- Store in S3 with 7-year retention (@aws-sdk/client-s3)
 - Include data integrity hash (SHA-256) for tamper detection
 
 ---

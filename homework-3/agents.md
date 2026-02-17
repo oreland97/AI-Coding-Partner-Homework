@@ -9,32 +9,32 @@ This document defines how an AI coding partner (GitHub Copilot, Claude Code, etc
 ## Tech Stack Requirements
 
 ### Backend Framework
-- **Language**: Python 3.11+ (strict requirement)
-- **Framework**: FastAPI 0.104+ with async/await
-- **Package Manager**: Poetry or pip with requirements.txt
-- **Virtual Environment**: Python venv or Poetry
+- **Language**: TypeScript 5.0+ (strict mode required)
+- **Runtime**: Node.js 18+ LTS
+- **Framework**: Express.js 4.18+ with async middleware
+- **Package Manager**: npm or pnpm with package-lock.json
 
 ### Database & Storage
 - **Primary Database**: PostgreSQL 15+ with pgcrypto extension
-- **ORM**: SQLAlchemy 2.0+ with Alembic for migrations
-- **Cache Layer**: Redis 7+ (ioredis or aioredis for async)
+- **ORM**: Prisma 5+ for type-safe database access
+- **Cache Layer**: Redis 7+ (ioredis for async operations)
 - **File Storage**: AWS S3 or MinIO for compliance document retention
 
 ### Message Queue & Events
-- **Queue System**: RabbitMQ 3.12+ or AWS SQS
-- **Worker Framework**: Celery 5.3+ or asyncio tasks
-- **Event Publishing**: Use webhook_service for all business events
+- **Queue System**: BullMQ 4+ (Redis-based) or AWS SQS
+- **Worker Framework**: BullMQ workers or custom async processors
+- **Event Publishing**: Use webhookService for all business events
 
 ### Testing & Quality
-- **Unit Testing**: pytest 7.4+
-- **Integration Testing**: pytest with fixtures + PostgreSQL testcontainers
-- **API Testing**: FastAPI TestClient + Starlette test utilities
-- **Code Quality**: Black (formatting), flake8 (linting), mypy (type checking)
-- **Coverage**: pytest-cov with minimum 90% coverage requirement
+- **Unit Testing**: Jest 29+ with ts-jest
+- **Integration Testing**: Jest with Supertest + PostgreSQL testcontainers
+- **API Testing**: Supertest for HTTP endpoint testing
+- **Code Quality**: ESLint + Prettier (formatting), TypeScript strict mode
+- **Coverage**: Jest coverage with minimum 90% requirement
 
 ### Monitoring & Logging
-- **Logging**: Python logging module + structlog for structured logs
-- **Metrics**: prometheus-client for Prometheus integration
+- **Logging**: Winston for structured logging
+- **Metrics**: prom-client for Prometheus integration
 - **Tracing**: OpenTelemetry with Jaeger for distributed tracing
 - **Alerting**: Prometheus Alertmanager for critical alerts
 
@@ -44,238 +44,288 @@ This document defines how an AI coding partner (GitHub Copilot, Claude Code, etc
 
 ### 1. Monetary Value Handling
 
-**RULE**: Never use float for money. Always use `Decimal`.
+**RULE**: Never use native Number for money. Always use `decimal.js`.
 
-```python
-# ✅ CORRECT
-from decimal import Decimal
+```typescript
+// CORRECT
+import Decimal from 'decimal.js';
 
-spending_limit = Decimal("1000.00")  # 2 decimal places
-total = Decimal("100.50") + Decimal("50.25")
+const spendingLimit = new Decimal('1000.00');  // 2 decimal places
+const total = new Decimal('100.50').plus('50.25');
 
-# ❌ WRONG - Never do this
-spending_limit = 1000.00  # float
-total = 100.50 + 50.25
+// WRONG - Never do this
+const spendingLimit = 1000.00;  // native Number
+const total = 100.50 + 50.25;
 ```
 
 **RULE**: All monetary values must have exactly 2 decimal places.
 
-```python
-# ✅ CORRECT
-amount = Decimal("99.99")
-price = Decimal("0.01")
+```typescript
+// CORRECT
+const amount = new Decimal('99.99');
+const price = new Decimal('0.01');
 
-# ❌ WRONG
-amount = Decimal("99.9")  # Only 1 decimal place
-price = Decimal("1")  # No decimal places
+// WRONG
+const amount = new Decimal('99.9');  // Only 1 decimal place
+const price = new Decimal('1');  // No decimal places
 ```
 
 ### 2. Card Data Security
 
 **RULE**: Never store, log, or transmit full Primary Account Number (PAN).
 
-```python
-# ✅ CORRECT - Store encrypted and masked
-card_number_encrypted = encrypt_pii(pii_value=full_pan)  # Stored encrypted
-card_last_four = full_pan[-4:]  # Store only last 4 digits for display
+```typescript
+// CORRECT - Store encrypted and masked
+const cardNumberEncrypted = await encryptPii(fullPan);  // Stored encrypted
+const cardLastFour = fullPan.slice(-4);  // Store only last 4 digits for display
 
-# ❌ WRONG - Never log sensitive data
-logger.info(f"Processing card {card_number}")  # VIOLATION
-db.save(card_number)  # VIOLATION - store plaintext
+// WRONG - Never log sensitive data
+logger.info(`Processing card ${cardNumber}`);  // VIOLATION
+await db.card.create({ data: { cardNumber } });  // VIOLATION - store plaintext
 ```
 
 **RULE**: Use field-level encryption for sensitive data.
 
-```python
-# ✅ CORRECT - Use pgcrypto for database encryption
+```sql
+-- CORRECT - Use pgcrypto for database encryption
 CREATE TABLE virtual_cards (
     id UUID PRIMARY KEY,
     card_number_encrypted bytea,  -- Encrypted with pgcrypto
     card_last_four VARCHAR(4),
     cvv_encrypted bytea  -- Never store CVV in plaintext
 );
+```
 
-# In Python ORM
-class VirtualCard(Base):
-    __tablename__ = "virtual_cards"
-    card_number_encrypted: Mapped[bytes] = mapped_column(BYTEA)
+```typescript
+// In Prisma schema
+model VirtualCard {
+  id                    String   @id @default(uuid())
+  cardNumberEncrypted   Bytes    // Encrypted with pgcrypto
+  cardLastFour          String   @db.VarChar(4)
+  // CVV should never be stored, even encrypted
+}
 ```
 
 ### 3. Authentication & Authorization
 
 **RULE**: All endpoints require authentication. Use JWT + OAuth 2.0.
 
-```python
-# ✅ CORRECT - Every endpoint protected
-@router.get("/api/v1/cards/{card_id}")
-async def get_card(
-    card_id: UUID,
-    current_user: User = Depends(get_current_user)  # Required
-) -> CardResponse:
-    # Verify user owns this card
-    card = await CardService.get_card(card_id)
-    if card.user_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Forbidden")
-    return card
+```typescript
+// CORRECT - Every endpoint protected
+router.get('/api/v1/cards/:cardId',
+  authenticate,  // Required middleware
+  async (req: AuthenticatedRequest, res: Response) => {
+    const card = await cardService.getCard(req.params.cardId);
 
-# ❌ WRONG - Unprotected endpoint
-@router.get("/api/v1/cards/{card_id}")
-async def get_card(card_id: UUID) -> CardResponse:
-    return CardService.get_card(card_id)
+    // Verify user owns this card
+    if (card.userId !== req.user.id) {
+      throw new ForbiddenError('Access denied');
+    }
+
+    return res.json(card);
+  }
+);
+
+// WRONG - Unprotected endpoint
+router.get('/api/v1/cards/:cardId', async (req, res) => {
+  const card = await cardService.getCard(req.params.cardId);
+  return res.json(card);
+});
 ```
 
 **RULE**: Implement role-based access control (RBAC).
 
-```python
-# ✅ CORRECT - Role-based access
-@router.get("/api/v1/compliance/reports")
-async def get_compliance_reports(
-    current_user: User = Depends(require_role("COMPLIANCE_OFFICER"))
-) -> List[ComplianceReport]:
-    return ComplianceService.get_reports()
+```typescript
+// CORRECT - Role-based access
+router.get('/api/v1/compliance/reports',
+  authenticate,
+  requireRole('COMPLIANCE_OFFICER'),  // Role check
+  async (req: AuthenticatedRequest, res: Response) => {
+    const reports = await complianceService.getReports();
+    return res.json(reports);
+  }
+);
 
-# ❌ WRONG - No role checking
-@router.get("/api/v1/compliance/reports")
-async def get_compliance_reports(
-    current_user: User = Depends(get_current_user)
-) -> List[ComplianceReport]:
-    return ComplianceService.get_reports()
+// WRONG - No role checking
+router.get('/api/v1/compliance/reports',
+  authenticate,
+  async (req: AuthenticatedRequest, res: Response) => {
+    const reports = await complianceService.getReports();
+    return res.json(reports);
+  }
+);
 ```
 
 ### 4. Audit Logging
 
 **RULE**: Every card operation must create an immutable audit log entry.
 
-```python
-# ✅ CORRECT - Always log operations
-async def freeze_card(card_id: UUID, user: User) -> CardResponse:
-    card = await CardService.get_card(card_id)
-    card.status = CardStatus.FROZEN
-    await db.commit()
-    
-    # Create immutable audit log
-    await AuditLogService.create(
-        action="card_freeze",
-        user_id=user.id,
-        card_id=card_id,
-        ip_address=request.client.host,
-        reason="User initiated freeze"
-    )
-    return card
+```typescript
+// CORRECT - Always log operations
+async function freezeCard(cardId: string, user: User): Promise<CardResponse> {
+  const card = await cardService.getCard(cardId);
 
-# ❌ WRONG - No audit trail
-async def freeze_card(card_id: UUID) -> CardResponse:
-    card = await CardService.get_card(card_id)
-    card.status = CardStatus.FROZEN
-    await db.commit()
-    return card
+  const updatedCard = await prisma.virtualCard.update({
+    where: { id: cardId },
+    data: { status: CardStatus.FROZEN }
+  });
+
+  // Create immutable audit log
+  await auditLogService.create({
+    action: 'card_freeze',
+    userId: user.id,
+    cardId: cardId,
+    ipAddress: req.ip,
+    reason: 'User initiated freeze'
+  });
+
+  return updatedCard;
+}
+
+// WRONG - No audit trail
+async function freezeCard(cardId: string): Promise<CardResponse> {
+  return prisma.virtualCard.update({
+    where: { id: cardId },
+    data: { status: CardStatus.FROZEN }
+  });
+}
 ```
 
 **RULE**: Audit logs must never be deleted (soft delete only, with retention).
 
-```python
-# ✅ CORRECT - 7 year retention
-class AuditLog(Base):
-    __tablename__ = "card_audit_log"
-    id: Mapped[UUID] = mapped_column(primary_key=True)
-    action: Mapped[str]
-    user_id: Mapped[Optional[UUID]]
-    card_id: Mapped[UUID]
-    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
-    retention_until: Mapped[datetime]  # 7 years from creation
-    # No delete method - audit logs are permanent
+```typescript
+// CORRECT - 7 year retention
+interface CardAuditLog {
+  id: string;
+  action: string;
+  userId?: string;
+  cardId: string;
+  createdAt: Date;
+  retentionUntil: Date;  // 7 years from creation
+  // No delete method - audit logs are permanent
+}
 ```
 
 ### 5. State Machine Validation
 
 **RULE**: All card status changes must follow defined state machine.
 
-```python
-# ✅ CORRECT - Validate transitions
-CARD_STATE_TRANSITIONS = {
-    CardStatus.ACTIVE: {CardStatus.FROZEN, CardStatus.CANCELLED},
-    CardStatus.FROZEN: {CardStatus.ACTIVE, CardStatus.CANCELLED},
-    CardStatus.CANCELLED: set(),  # No transitions from CANCELLED
-    CardStatus.EXPIRED: set(),  # No transitions from EXPIRED
+```typescript
+// CORRECT - Validate transitions
+const CARD_STATE_TRANSITIONS: Record<CardStatus, Set<CardStatus>> = {
+  [CardStatus.ACTIVE]: new Set([CardStatus.FROZEN, CardStatus.CANCELLED]),
+  [CardStatus.FROZEN]: new Set([CardStatus.ACTIVE, CardStatus.CANCELLED]),
+  [CardStatus.CANCELLED]: new Set(),  // No transitions from CANCELLED
+  [CardStatus.EXPIRED]: new Set(),  // No transitions from EXPIRED
+};
+
+async function updateCardStatus(
+  card: VirtualCard,
+  newStatus: CardStatus
+): Promise<VirtualCard> {
+  const allowedTransitions = CARD_STATE_TRANSITIONS[card.status];
+
+  if (!allowedTransitions.has(newStatus)) {
+    throw new ConflictError(
+      `Cannot transition from ${card.status} to ${newStatus}`
+    );
+  }
+
+  return prisma.virtualCard.update({
+    where: { id: card.id },
+    data: { status: newStatus }
+  });
 }
 
-async def update_card_status(
-    card: VirtualCard,
-    new_status: CardStatus
-) -> VirtualCard:
-    allowed_transitions = CARD_STATE_TRANSITIONS.get(card.status, set())
-    if new_status not in allowed_transitions:
-        raise HTTPException(
-            status_code=409,
-            detail=f"Cannot transition from {card.status} to {new_status}"
-        )
-    card.status = new_status
-    await db.commit()
-    return card
-
-# ❌ WRONG - No validation
-async def update_card_status(card: VirtualCard, new_status: CardStatus):
-    card.status = new_status  # Allow any transition
-    await db.commit()
+// WRONG - No validation
+async function updateCardStatus(
+  card: VirtualCard,
+  newStatus: CardStatus
+): Promise<VirtualCard> {
+  return prisma.virtualCard.update({
+    where: { id: card.id },
+    data: { status: newStatus }  // Allow any transition
+  });
+}
 ```
 
 ### 6. Fraud Detection Standards
 
 **RULE**: Implement real-time fraud detection for all transactions.
 
-```python
-# ✅ CORRECT - Fraud checks before authorization
-async def authorize_transaction(
-    request: TransactionAuthRequest
-) -> AuthorizationResponse:
-    card = await CardService.get_card(request.card_id)
-    
-    # Check fraud score
-    fraud_score = await FraudDetectionService.evaluate(
-        card=card,
-        amount=request.amount,
-        merchant=request.merchant,
-        ip_address=request.ip_address
-    )
-    
-    if fraud_score >= 70:
-        # Auto-freeze card
-        card.status = CardStatus.FROZEN
-        await db.commit()
-        return AuthorizationResponse(decision="DECLINE", reason="Fraud detected")
-    
-    # Continue with authorization
-    return AuthorizationResponse(decision="APPROVE")
+```typescript
+// CORRECT - Fraud checks before authorization
+async function authorizeTransaction(
+  request: TransactionAuthRequest
+): Promise<AuthorizationResponse> {
+  const card = await cardService.getCard(request.cardId);
 
-# ❌ WRONG - No fraud detection
-async def authorize_transaction(request: TransactionAuthRequest):
-    if request.amount <= card.spending_limit:
-        return AuthorizationResponse(decision="APPROVE")
-    return AuthorizationResponse(decision="DECLINE")
+  // Check fraud score
+  const fraudScore = await fraudDetectionService.evaluate({
+    card,
+    amount: request.amount,
+    merchant: request.merchant,
+    ipAddress: request.ipAddress
+  });
+
+  if (fraudScore >= 70) {
+    // Auto-freeze card
+    await prisma.virtualCard.update({
+      where: { id: card.id },
+      data: { status: CardStatus.FROZEN }
+    });
+
+    return { decision: 'DECLINE', reason: 'Fraud detected' };
+  }
+
+  // Continue with authorization
+  return { decision: 'APPROVE' };
+}
+
+// WRONG - No fraud detection
+async function authorizeTransaction(
+  request: TransactionAuthRequest
+): Promise<AuthorizationResponse> {
+  const card = await cardService.getCard(request.cardId);
+
+  if (request.amount.lte(card.spendingLimit)) {
+    return { decision: 'APPROVE' };
+  }
+  return { decision: 'DECLINE' };
+}
 ```
 
 ### 7. Rate Limiting
 
 **RULE**: Implement rate limiting on all sensitive endpoints.
 
-```python
-# ✅ CORRECT - Rate limiting
-@router.post("/api/v1/cards")
-@rate_limit(
-    limit=5,  # 5 requests
-    period=3600,  # per hour
-    key_func=lambda: get_current_user().id  # Per user
-)
-async def create_card(
-    request: CardCreateRequest,
-    current_user: User = Depends(get_current_user)
-) -> CardResponse:
-    return await CardService.create_card(request, current_user)
+```typescript
+// CORRECT - Rate limiting
+import rateLimit from 'express-rate-limit';
 
-# ❌ WRONG - No rate limiting
-@router.post("/api/v1/cards")
-async def create_card(request: CardCreateRequest) -> CardResponse:
-    return await CardService.create_card(request)
+const cardCreationLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,  // 1 hour
+  max: 5,  // 5 requests per hour
+  keyGenerator: (req) => req.user.id,  // Per user
+  message: 'Too many card creation requests'
+});
+
+router.post('/api/v1/cards',
+  authenticate,
+  cardCreationLimiter,
+  async (req: AuthenticatedRequest, res: Response) => {
+    const card = await cardService.createCard(req.body, req.user);
+    return res.status(201).json(card);
+  }
+);
+
+// WRONG - No rate limiting
+router.post('/api/v1/cards',
+  async (req: Request, res: Response) => {
+    const card = await cardService.createCard(req.body);
+    return res.status(201).json(card);
+  }
+);
 ```
 
 ---
@@ -286,75 +336,83 @@ async def create_card(request: CardCreateRequest) -> CardResponse:
 
 ```
 src/
-├── api/
-│   ├── v1/
-│   │   ├── __init__.py
-│   │   ├── endpoints/
-│   │   │   ├── cards.py
-│   │   │   ├── transactions.py
-│   │   │   ├── card_limits.py
-│   │   │   ├── fraud_alerts.py
-│   │   │   ├── compliance.py
-│   │   │   └── webhooks.py
-│   │   └── schemas/
-│   │       ├── card_schemas.py
-│   │       ├── transaction_schemas.py
-│   │       └── compliance_schemas.py
-├── models/
-│   ├── __init__.py
-│   ├── card.py
-│   ├── transaction.py
-│   ├── fraud_alert.py
-│   └── audit_log.py
+├── routes/
+│   ├── index.ts
+│   ├── cards.ts
+│   ├── transactions.ts
+│   ├── cardLimits.ts
+│   ├── fraudAlerts.ts
+│   ├── compliance.ts
+│   └── webhooks.ts
+├── schemas/
+│   ├── cardSchemas.ts
+│   ├── transactionSchemas.ts
+│   └── complianceSchemas.ts
+├── types/
+│   ├── index.ts
+│   ├── card.ts
+│   ├── transaction.ts
+│   ├── fraudAlert.ts
+│   └── auditLog.ts
 ├── services/
-│   ├── card_service.py
-│   ├── authorization_service.py
-│   ├── fraud_detection_service.py
-│   ├── webhook_service.py
-│   ├── compliance_service.py
-│   └── encryption_service.py
+│   ├── cardService.ts
+│   ├── authorizationService.ts
+│   ├── fraudDetectionService.ts
+│   ├── webhookService.ts
+│   ├── complianceService.ts
+│   └── encryptionService.ts
 ├── workers/
-│   ├── webhook_worker.py
-│   └── compliance_reporter.py
+│   ├── webhookWorker.ts
+│   └── complianceReporter.ts
+├── middleware/
+│   ├── authenticate.ts
+│   ├── requireRole.ts
+│   ├── errorHandler.ts
+│   └── rateLimiter.ts
 ├── utils/
-│   ├── decorators.py
-│   ├── validators.py
-│   └── constants.py
-├── database/
-│   ├── __init__.py
-│   ├── connection.py
-│   └── migrations/
-└── config.py
+│   ├── validators.ts
+│   └── constants.ts
+├── prisma/
+│   └── schema.prisma
+└── config.ts
 ```
 
 ### Naming Conventions
 
-- **Classes**: PascalCase (e.g., `VirtualCard`, `CardService`)
-- **Functions/Methods**: snake_case (e.g., `create_card`, `validate_amount`)
+- **Classes/Interfaces**: PascalCase (e.g., `VirtualCard`, `CardService`)
+- **Functions/Methods**: camelCase (e.g., `createCard`, `validateAmount`)
 - **Constants**: UPPER_SNAKE_CASE (e.g., `MAX_SPENDING_LIMIT`, `RETRY_ATTEMPTS`)
 - **Database Tables**: snake_case (e.g., `virtual_cards`, `card_audit_log`)
-- **API Endpoints**: kebab-case (e.g., `/api/v1/cards/{card_id}/freeze`)
+- **API Endpoints**: kebab-case with params (e.g., `/api/v1/cards/:cardId/freeze`)
 - **Enums**: PascalCase (e.g., `CardStatus.ACTIVE`)
 
 ### Error Handling
 
-```python
-# ✅ CORRECT - Explicit error handling
-async def get_card(card_id: UUID, user: User) -> CardResponse:
-    try:
-        card = await CardService.get_card(card_id)
-        if card.user_id != user.id:
-            raise HTTPException(status_code=403, detail="Forbidden")
-        return card
-    except CardNotFoundError:
-        raise HTTPException(status_code=404, detail="Card not found")
-    except Exception as e:
-        logger.error(f"Unexpected error: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Internal server error")
+```typescript
+// CORRECT - Explicit error handling
+async function getCard(cardId: string, user: User): Promise<CardResponse> {
+  try {
+    const card = await cardService.getCard(cardId);
 
-# ❌ WRONG - Silent failures
-async def get_card(card_id: UUID) -> CardResponse:
-    return CardService.get_card(card_id)  # No error handling
+    if (card.userId !== user.id) {
+      throw new ForbiddenError('Access denied');
+    }
+
+    return card;
+  } catch (error) {
+    if (error instanceof CardNotFoundError) {
+      throw new NotFoundError('Card not found');
+    }
+
+    logger.error('Unexpected error', { error, cardId });
+    throw new InternalServerError('Internal server error');
+  }
+}
+
+// WRONG - Silent failures
+async function getCard(cardId: string): Promise<CardResponse> {
+  return cardService.getCard(cardId);  // No error handling
+}
 ```
 
 ---
@@ -363,63 +421,68 @@ async def get_card(card_id: UUID) -> CardResponse:
 
 ### Unit Test Coverage Minimum: 90%
 
-```python
-# ✅ CORRECT - Comprehensive unit tests
-@pytest.mark.asyncio
-async def test_create_card_success():
-    """Test successful card creation with valid data."""
-    user = create_test_user()
-    request = CardCreateRequest(
-        spending_limit_daily=Decimal("1000.00"),
-        spending_limit_monthly=Decimal("10000.00"),
-        currency="USD"
-    )
-    
-    card = await CardService.create_card(request, user)
-    
-    assert card.id is not None
-    assert card.user_id == user.id
-    assert card.status == CardStatus.ACTIVE
-    assert card.spending_limit_daily == Decimal("1000.00")
+```typescript
+// CORRECT - Comprehensive unit tests
+describe('CardService.createCard', () => {
+  it('should create card with valid data', async () => {
+    // Arrange
+    const user = createTestUser();
+    const request: CardCreateRequest = {
+      spendingLimitDaily: new Decimal('1000.00'),
+      spendingLimitMonthly: new Decimal('10000.00'),
+      currency: 'USD'
+    };
 
+    // Act
+    const card = await cardService.createCard(request, user);
 
-@pytest.mark.asyncio
-async def test_create_card_exceeds_daily_limit():
-    """Test card creation fails when daily > monthly."""
-    user = create_test_user()
-    request = CardCreateRequest(
-        spending_limit_daily=Decimal("50000.00"),
-        spending_limit_monthly=Decimal("1000.00"),  # Invalid
-        currency="USD"
-    )
-    
-    with pytest.raises(ValidationError):
-        await CardService.create_card(request, user)
+    // Assert
+    expect(card.id).toBeDefined();
+    expect(card.userId).toBe(user.id);
+    expect(card.status).toBe(CardStatus.ACTIVE);
+    expect(card.spendingLimitDaily.toString()).toBe('1000.00');
+  });
+
+  it('should reject when daily limit exceeds monthly', async () => {
+    // Arrange
+    const user = createTestUser();
+    const request: CardCreateRequest = {
+      spendingLimitDaily: new Decimal('50000.00'),
+      spendingLimitMonthly: new Decimal('1000.00'),  // Invalid
+      currency: 'USD'
+    };
+
+    // Act & Assert
+    await expect(cardService.createCard(request, user))
+      .rejects.toThrow(ValidationError);
+  });
+});
 ```
 
 ### Integration Tests Required
 
-```python
-@pytest.mark.asyncio
-async def test_card_lifecycle():
-    """Test complete card lifecycle: create -> freeze -> unfreeze -> cancel."""
-    user = create_test_user()
-    
-    # Create card
-    card = await CardService.create_card(..., user)
-    assert card.status == CardStatus.ACTIVE
-    
-    # Freeze card
-    card = await CardService.freeze_card(card.id, user)
-    assert card.status == CardStatus.FROZEN
-    
-    # Unfreeze card
-    card = await CardService.unfreeze_card(card.id, user)
-    assert card.status == CardStatus.ACTIVE
-    
-    # Cancel card
-    card = await CardService.cancel_card(card.id, user)
-    assert card.status == CardStatus.CANCELLED
+```typescript
+describe('Card Lifecycle', () => {
+  it('should complete full lifecycle: create -> freeze -> unfreeze -> cancel', async () => {
+    const user = await createTestUser();
+
+    // Create card
+    let card = await cardService.createCard(createCardRequest(), user);
+    expect(card.status).toBe(CardStatus.ACTIVE);
+
+    // Freeze card
+    card = await cardService.freezeCard(card.id, user);
+    expect(card.status).toBe(CardStatus.FROZEN);
+
+    // Unfreeze card
+    card = await cardService.unfreezeCard(card.id, user);
+    expect(card.status).toBe(CardStatus.ACTIVE);
+
+    // Cancel card
+    card = await cardService.cancelCard(card.id, user);
+    expect(card.status).toBe(CardStatus.CANCELLED);
+  });
+});
 ```
 
 ---
@@ -432,9 +495,9 @@ async def test_card_lifecycle():
 - [ ] All endpoints require authentication
 - [ ] All data endpoints require HTTPS (TLS 1.3)
 - [ ] CORS enabled only for known domains
-- [ ] SQL injection prevention (parameterized queries only)
+- [ ] SQL injection prevention (Prisma parameterized queries)
 - [ ] CSRF protection on state-changing endpoints
-- [ ] Input validation on all endpoints
+- [ ] Input validation on all endpoints (Zod)
 - [ ] Output encoding for XSS prevention
 - [ ] Secrets never committed to git
 - [ ] Database connections encrypted (SSL)
@@ -481,56 +544,53 @@ async def test_card_lifecycle():
 
 ### Database Optimization
 
-```python
-# ✅ CORRECT - Proper indexing
-class VirtualCard(Base):
-    __tablename__ = "virtual_cards"
-    __table_args__ = (
-        Index("idx_user_id_status", "user_id", "status"),
-        Index("idx_created_at", "created_at"),
-    )
+```typescript
+// CORRECT - Proper indexing in Prisma
+model VirtualCard {
+  id        String     @id @default(uuid())
+  userId    String
+  status    CardStatus
+  createdAt DateTime   @default(now())
+
+  @@index([userId, status])
+  @@index([createdAt])
+}
 ```
 
 ---
 
 ## Documentation Standards
 
-### Docstring Format
+### JSDoc Format
 
-```python
-# ✅ CORRECT - Detailed docstrings
-async def create_card(
-    card_request: CardCreateRequest,
-    current_user: User = Depends(get_current_user)
-) -> CardResponse:
-    """
-    Create a new virtual card for the authenticated user.
-    
-    This endpoint initiates card issuance through the payment processor,
-    encrypts sensitive card data, and creates an audit log entry.
-    
-    Args:
-        card_request: Card creation parameters including spending limits
-        current_user: Authenticated user making the request
-    
-    Returns:
-        CardResponse: Created card with masked card number (last 4 digits only)
-    
-    Raises:
-        ValidationError: If spending limits are invalid
-        KYCNotVerifiedError: If user's KYC verification is incomplete
-        RateLimitError: If user exceeds card creation rate limit
-    
-    Security:
-        - Requires authenticated user
-        - Card creation rate limited to 5/hour per user
-        - Audit logged with user IP and timestamp
-    
-    Compliance:
-        - PCI-DSS: Card number encrypted before storage
-        - GDPR: Card linked to user consent record
-    """
-    # Implementation
+```typescript
+// CORRECT - Detailed JSDoc
+/**
+ * Create a new virtual card for the authenticated user.
+ *
+ * This endpoint initiates card issuance through the payment processor,
+ * encrypts sensitive card data, and creates an audit log entry.
+ *
+ * @param cardRequest - Card creation parameters including spending limits
+ * @param currentUser - Authenticated user making the request
+ * @returns Created card with masked card number (last 4 digits only)
+ * @throws {ValidationError} If spending limits are invalid
+ * @throws {KYCNotVerifiedError} If user's KYC verification is incomplete
+ * @throws {RateLimitError} If user exceeds card creation rate limit
+ *
+ * @security Requires authenticated user
+ * @security Card creation rate limited to 5/hour per user
+ * @security Audit logged with user IP and timestamp
+ *
+ * @compliance PCI-DSS: Card number encrypted before storage
+ * @compliance GDPR: Card linked to user consent record
+ */
+async function createCard(
+  cardRequest: CardCreateRequest,
+  currentUser: User
+): Promise<CardResponse> {
+  // Implementation
+}
 ```
 
 ---
@@ -573,6 +633,6 @@ WEBHOOK_EVENTS_ENABLED=true
 
 ---
 
-**Last Updated**: February 2026  
+**Last Updated**: February 2026
 **Version**: 1.0
-
+**Language**: TypeScript 5.0+ with Node.js 18+

@@ -25,10 +25,10 @@ Complete product specification including:
 - **Context**: Beginning/ending context defining project scope
 - **Low-Level Tasks**: 10 detailed implementation tasks with AI prompts, file paths, functions, and constraints
 
-### 2. agents.md (550+ lines)
+### 2. agents.md (600+ lines)
 AI agent guidelines defining:
-- **Tech Stack Requirements**: Python 3.11, FastAPI, PostgreSQL, Redis, testing frameworks
-- **Domain Rules**: 7 critical banking domain rules (Decimal for money, card security, auth, audit, state machine, fraud detection, rate limiting)
+- **Tech Stack Requirements**: TypeScript 5.0+, Node.js 18+, Express.js, Prisma, PostgreSQL, Redis, Jest
+- **Domain Rules**: 7 critical banking domain rules (decimal.js for money, card security, auth, audit, state machine, fraud detection, rate limiting)
 - **Code Style**: File organization, naming conventions, error handling patterns
 - **Testing Standards**: Unit test coverage requirements, integration tests, test patterns
 - **Security Checklist**: PCI-DSS and GDPR compliance requirements
@@ -37,14 +37,14 @@ AI agent guidelines defining:
 
 ### 3. .github/copilot-instructions.md (400+ lines)
 GitHub Copilot-specific instructions:
-- **8 Patterns to ALWAYS Follow**: Decimal.js for money, async/await, TypeScript types, audit logging, input validation (Joi/Zod), error handling, transactions, caching
+- **8 Patterns to ALWAYS Follow**: decimal.js for money, async/await, TypeScript types, audit logging, input validation (Zod), error handling, Prisma transactions, caching
 - **7 Patterns to NEVER Use**: Native Number for money, plaintext PAN, unprotected endpoints, missing error handling, missing await, no type annotations, missing audit logs
-- **Naming Conventions**: Database tables (camelCase), functions (camelCase), constants, endpoints, enums
+- **Naming Conventions**: Database tables (snake_case), functions (camelCase), constants, endpoints, enums
 - **API Response Format**: Success/error response structures (TypeScript interfaces)
 - **Testing Patterns**: Jest test templates, mock patterns
 - **Security Checklist**: 8-point verification before code suggestion
 - **Performance Checklist**: 6-point verification for performance
-- **Approved Libraries**: Must-use (Express, Prisma, Joi, Jest, decimal.js), optional, forbidden libraries
+- **Approved Libraries**: Must-use (Express, Prisma, Zod, Jest, decimal.js), optional, forbidden libraries
 
 ### 4. README.md (This file)
 Explains design choices, rationale, and industry best practices
@@ -80,9 +80,9 @@ Explains design choices, rationale, and industry best practices
 
 **Why 7 Specific Rules?**
 
-1. **Decimal for Money** (Rule #1)
+1. **decimal.js for Money** (Rule #1)
    - Critical: Prevents rounding errors in financial calculations
-   - Alternative: Use integer cents, but Decimal is more maintainable
+   - Alternative: Use integer cents, but decimal.js is more maintainable
    - Regulatory: PCI-DSS requires precise financial calculations
 
 2. **Card Data Security** (Rule #2)
@@ -224,14 +224,14 @@ Explains design choices, rationale, and industry best practices
 - Event filtering by subscription type
 - Webhook verification challenge-response
 
-### 8. **Monetary Value Handling (Never Float)**
+### 8. **Monetary Value Handling (Never Native Number)**
 **Locations in Spec:**
 - `agents.md` → Domain Rules → "Monetary Value Handling" (Rule #1)
 - `.github/copilot-instructions.md` → Patterns to ALWAYS Follow #1
 - `.github/copilot-instructions.md` → Forbidden Patterns #1
 
 **Standard Practice:**
-- Use `Decimal` type for all monetary values
+- Use `decimal.js` library for all monetary values
 - Always 2 decimal places (cents precision)
 - Prevents rounding errors in financial calculations
 - Required for PCI-DSS Level 1 compliance
@@ -290,10 +290,10 @@ Explains design choices, rationale, and industry best practices
 - Separate fraud detection service
 
 ### 2. **Technology Stack**
-- **Python 3.11 + FastAPI**: Best async-first framework for I/O-heavy operations
-- **PostgreSQL + pgcrypto**: Industry standard with built-in encryption
-- **Redis**: Cache layer for sub-100ms response times
-- **RabbitMQ/SQS**: Async processing for fraud detection and reporting
+- **TypeScript 5.0+ / Node.js 18+ / Express.js**: Type-safe, async-first framework for I/O-heavy operations
+- **Prisma + PostgreSQL + pgcrypto**: Type-safe ORM with industry standard encryption
+- **Redis + ioredis**: Cache layer for sub-100ms response times
+- **BullMQ/SQS**: Async processing for fraud detection and reporting
 
 ### 3. **Security Layers**
 - **Layer 1 (Transport)**: TLS 1.3 for all data in transit
@@ -373,10 +373,10 @@ By following this specification, AI agents will learn:
    - Role-based access control (RBAC)
    - Audit trail design patterns
 
-3. **Python + FastAPI Mastery**
+3. **TypeScript + Express.js Mastery**
    - Async/await patterns for I/O-heavy operations
-   - Pydantic model validation
-   - SQLAlchemy ORM with async drivers
+   - Zod schema validation
+   - Prisma ORM with type-safe queries
    - Error handling and custom exceptions
 
 4. **Testing Disciplines**
@@ -397,8 +397,8 @@ By following this specification, AI agents will learn:
 
 ### If Implementing This Specification:
 
-1. Set up Node.js 18+ with TypeScript + Express.js project structure
-2. Create Prisma schema (Task #1)
+1. Set up Node.js 18+ with TypeScript 5.0+ + Express.js project structure
+2. Initialize Prisma and create schema (Task #1)
 3. Implement card creation API (Task #2)
 4. Build card freeze/unfreeze functionality (Task #3)
 5. Create transaction authorization webhook (Task #4)
