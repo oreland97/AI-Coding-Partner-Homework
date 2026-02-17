@@ -10,11 +10,11 @@ http://localhost:3000
 
 ## Authentication
 
-Currently, the API does not require authentication. In production, implement JWT or OAuth2.
+Currently, no authentication required. For production, implement JWT or OAuth2.
 
 ## Common Response Format
 
-### Success Response (2xx)
+### Success Response
 ```json
 {
   "id": "uuid",
@@ -23,75 +23,50 @@ Currently, the API does not require authentication. In production, implement JWT
   "customer_name": "string",
   "subject": "string",
   "description": "string",
-  "category": "string",
-  "priority": "string",
-  "status": "string",
+  "category": "account_access | technical_issue | billing_question | feature_request | bug_report | other",
+  "priority": "urgent | high | medium | low",
+  "status": "new | in_progress | waiting_customer | resolved | closed",
   "created_at": "ISO-8601 datetime",
   "updated_at": "ISO-8601 datetime",
-  "resolved_at": null,
-  "assigned_to": null,
-  "tags": ["array"],
-  "metadata": {
-    "source": "string",
-    "browser": "string",
-    "device_type": "string"
-  },
   "classification": {
     "category": "string",
     "priority": "string",
     "category_confidence": 0.95,
     "priority_confidence": 0.85,
     "overall_confidence": 0.90,
-    "classified_at": "ISO-8601 datetime",
-    "manual_override": false,
-    "reasoning": {
-      "category_reasoning": "string",
-      "priority_reasoning": "string"
-    },
+    "reasoning": { "category_reasoning": "...", "priority_reasoning": "..." },
     "keywords_found": ["array"]
   }
 }
 ```
 
-### Error Response (4xx, 5xx)
+### Error Response
 ```json
 {
   "error": "Error message",
-  "details": [
-    {
-      "field": "fieldName",
-      "message": "Validation message"
-    }
-  ]
+  "details": [{ "field": "fieldName", "message": "Validation message" }]
 }
 ```
 
 ## Endpoints
 
-### 1. CREATE TICKET
-Creates a new support ticket.
+### 1. Create Ticket
 
-**Request**
-```
+```http
 POST /tickets?autoClassify=true
 Content-Type: application/json
 ```
 
-**Query Parameters**
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `autoClassify` | boolean | true | Whether to auto-classify the ticket |
-
-**Request Body**
+**Request Body:**
 ```json
 {
   "customer_id": "CUST-001",
   "customer_email": "john@example.com",
   "customer_name": "John Doe",
   "subject": "Cannot login to my account",
-  "description": "I've been locked out of my account after 3 failed login attempts. Password reset not working.",
+  "description": "I've been locked out after 3 failed login attempts",
   "status": "new",
-  "tags": ["urgent", "account"],
+  "tags": ["urgent"],
   "metadata": {
     "source": "web_form",
     "browser": "Chrome 120",
@@ -100,138 +75,38 @@ Content-Type: application/json
 }
 ```
 
-**cURL Example**
+**Response:** `201 Created` - Returns created ticket with auto-classification
+
+**cURL:**
 ```bash
 curl -X POST http://localhost:3000/tickets \
   -H "Content-Type: application/json" \
-  -d '{
-    "customer_id": "CUST-001",
-    "customer_email": "john@example.com",
-    "customer_name": "John Doe",
-    "subject": "Cannot login to my account",
-    "description": "I have been locked out of my account",
-    "status": "new"
-  }'
-```
-
-**Response** (201 Created)
-```json
-{
-  "id": "550e8400-e29b-41d4-a716-446655440000",
-  "customer_id": "CUST-001",
-  "customer_email": "john@example.com",
-  "customer_name": "John Doe",
-  "subject": "Cannot login to my account",
-  "description": "I have been locked out of my account",
-  "category": "account_access",
-  "priority": "urgent",
-  "status": "new",
-  "created_at": "2026-02-09T14:32:18.373Z",
-  "updated_at": "2026-02-09T14:32:18.373Z",
-  "resolved_at": null,
-  "assigned_to": null,
-  "tags": ["urgent", "account"],
-  "metadata": {
-    "source": "web_form",
-    "browser": "Chrome 120",
-    "device_type": "desktop"
-  },
-  "classification": {
-    "category": "account_access",
-    "priority": "urgent",
-    "category_confidence": 0.98,
-    "priority_confidence": 0.95,
-    "overall_confidence": 0.96,
-    "classified_at": "2026-02-09T14:32:18.373Z",
-    "manual_override": false,
-    "reasoning": {
-      "category_reasoning": "Matched 3 keyword(s) for account_access",
-      "priority_reasoning": "Found urgent/important keywords indicating urgent priority"
-    },
-    "keywords_found": ["login", "locked out", "password"]
-  }
-}
-```
-
-**Error Response** (400 Bad Request)
-```json
-{
-  "error": "Validation failed",
-  "details": [
-    {
-      "field": "customer_email",
-      "message": "Invalid email format"
-    }
-  ]
-}
+  -d '{"customer_id":"CUST-001","customer_email":"john@example.com","customer_name":"John Doe","subject":"Cannot login","description":"Locked out of account","status":"new"}'
 ```
 
 ---
 
-### 2. GET ALL TICKETS
-List all tickets with optional filtering and pagination.
+### 2. Get All Tickets
 
-**Request**
-```
+```http
 GET /tickets?category=account_access&priority=urgent&page=1&limit=20&search=login
 ```
 
-**Query Parameters**
+**Query Parameters:**
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `category` | string | (none) | Filter by category |
-| `priority` | string | (none) | Filter by priority |
-| `status` | string | (none) | Filter by status |
-| `customer_id` | string | (none) | Filter by customer ID |
-| `search` | string | (none) | Search in subject/description/customer name |
+| `category` | string | - | Filter by category |
+| `priority` | string | - | Filter by priority |
+| `status` | string | - | Filter by status |
+| `customer_id` | string | - | Filter by customer |
+| `search` | string | - | Search in subject/description/name |
 | `page` | integer | 1 | Page number (1-based) |
 | `limit` | integer | 20 | Records per page (1-100) |
 
-**cURL Example**
-```bash
-curl -X GET "http://localhost:3000/tickets?category=bug_report&priority=high&limit=10"
-```
-
-**Response** (200 OK)
+**Response:** `200 OK`
 ```json
 {
-  "data": [
-    {
-      "id": "550e8400-e29b-41d4-a716-446655440000",
-      "customer_id": "CUST-001",
-      "customer_email": "john@example.com",
-      "customer_name": "John Doe",
-      "subject": "App crashes on startup",
-      "description": "My app keeps crashing immediately after launch",
-      "category": "bug_report",
-      "priority": "high",
-      "status": "new",
-      "created_at": "2026-02-09T14:32:18.373Z",
-      "updated_at": "2026-02-09T14:32:18.373Z",
-      "resolved_at": null,
-      "assigned_to": null,
-      "tags": [],
-      "metadata": {
-        "source": "api",
-        "browser": null,
-        "device_type": null
-      },
-      "classification": {
-        "category": "bug_report",
-        "priority": "high",
-        "category_confidence": 0.95,
-        "priority_confidence": 0.85,
-        "overall_confidence": 0.90,
-        "classified_at": "2026-02-09T14:32:18.373Z",
-        "manual_override": false,
-        "reasoning": {
-          "category_reasoning": "Matched 4 keyword(s) for bug_report",
-          "priority_reasoning": "Found urgent/important keywords"
-        },
-        "keywords_found": ["crash", "bug", "issue"]
-      }
-    }
-  ],
+  "data": [/* array of tickets */],
   "pagination": {
     "page": 1,
     "limit": 20,
@@ -241,89 +116,37 @@ curl -X GET "http://localhost:3000/tickets?category=bug_report&priority=high&lim
 }
 ```
 
+**cURL:**
+```bash
+curl -X GET "http://localhost:3000/tickets?category=bug_report&priority=high&limit=10"
+```
+
 ---
 
-### 3. GET TICKET BY ID
-Retrieve a specific ticket by its ID.
+### 3. Get Ticket by ID
 
-**Request**
-```
+```http
 GET /tickets/:id
 ```
 
-**Path Parameters**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `id` | string | Ticket UUID |
+**Response:** `200 OK` - Returns single ticket  
+**Error:** `404 Not Found`
 
-**cURL Example**
+**cURL:**
 ```bash
 curl -X GET http://localhost:3000/tickets/550e8400-e29b-41d4-a716-446655440000
 ```
 
-**Response** (200 OK)
-```json
-{
-  "id": "550e8400-e29b-41d4-a716-446655440000",
-  "customer_id": "CUST-001",
-  "customer_email": "john@example.com",
-  "customer_name": "John Doe",
-  "subject": "Cannot login to my account",
-  "description": "I have been locked out of my account",
-  "category": "account_access",
-  "priority": "urgent",
-  "status": "new",
-  "created_at": "2026-02-09T14:32:18.373Z",
-  "updated_at": "2026-02-09T14:32:18.373Z",
-  "resolved_at": null,
-  "assigned_to": "support-agent-1",
-  "tags": ["urgent", "account"],
-  "metadata": {
-    "source": "web_form",
-    "browser": "Chrome 120",
-    "device_type": "desktop"
-  },
-  "classification": {
-    "category": "account_access",
-    "priority": "urgent",
-    "category_confidence": 0.98,
-    "priority_confidence": 0.95,
-    "overall_confidence": 0.96,
-    "classified_at": "2026-02-09T14:32:18.373Z",
-    "manual_override": false,
-    "reasoning": {
-      "category_reasoning": "Matched 3 keyword(s) for account_access",
-      "priority_reasoning": "Found urgent/important keywords indicating urgent priority"
-    },
-    "keywords_found": ["login", "locked out", "password"]
-  }
-}
-```
-
-**Error Response** (404 Not Found)
-```json
-{
-  "error": "Ticket not found"
-}
-```
-
 ---
 
-### 4. UPDATE TICKET
-Update an existing ticket.
+### 4. Update Ticket
 
-**Request**
-```
+```http
 PUT /tickets/:id
 Content-Type: application/json
 ```
 
-**Path Parameters**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `id` | string | Ticket UUID |
-
-**Request Body** (partial update allowed)
+**Request Body** (partial update allowed):
 ```json
 {
   "status": "in_progress",
@@ -332,131 +155,67 @@ Content-Type: application/json
 }
 ```
 
-**cURL Example**
+**Response:** `200 OK` - Returns updated ticket
+
+**cURL:**
 ```bash
 curl -X PUT http://localhost:3000/tickets/550e8400-e29b-41d4-a716-446655440000 \
   -H "Content-Type: application/json" \
-  -d '{
-    "status": "in_progress",
-    "assigned_to": "support-agent-1"
-  }'
-```
-
-**Response** (200 OK)
-```json
-{
-  "id": "550e8400-e29b-41d4-a716-446655440000",
-  "customer_id": "CUST-001",
-  "customer_email": "john@example.com",
-  "customer_name": "John Doe",
-  "subject": "Cannot login to my account",
-  "description": "I have been locked out of my account",
-  "category": "account_access",
-  "priority": "high",
-  "status": "in_progress",
-  "created_at": "2026-02-09T14:32:18.373Z",
-  "updated_at": "2026-02-09T15:45:30.123Z",
-  "resolved_at": null,
-  "assigned_to": "support-agent-1",
-  "tags": ["urgent", "account"],
-  "metadata": {
-    "source": "web_form",
-    "browser": "Chrome 120",
-    "device_type": "desktop"
-  },
-  "classification": null
-}
+  -d '{"status":"in_progress","assigned_to":"support-agent-1"}'
 ```
 
 ---
 
-### 5. DELETE TICKET
-Delete a specific ticket.
+### 5. Delete Ticket
 
-**Request**
-```
+```http
 DELETE /tickets/:id
 ```
 
-**cURL Example**
+**Response:** `204 No Content`  
+**Error:** `404 Not Found`
+
+**cURL:**
 ```bash
 curl -X DELETE http://localhost:3000/tickets/550e8400-e29b-41d4-a716-446655440000
 ```
 
-**Response** (204 No Content)
-```
-[Empty body]
-```
-
-**Error Response** (404 Not Found)
-```json
-{
-  "error": "Ticket not found"
-}
-```
-
 ---
 
-### 6. BULK IMPORT TICKETS
-Import multiple tickets from CSV, JSON, or XML file.
+### 6. Bulk Import Tickets
 
-**Request**
-```
+```http
 POST /tickets/import?autoClassify=true
-Content-Type: text/csv
+Content-Type: text/csv | application/json | application/xml
 ```
 
-**Query Parameters**
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `autoClassify` | boolean | true | Whether to auto-classify imported tickets |
+**Supported Formats:**
+- **CSV** - `Content-Type: text/csv`
+- **JSON** - `Content-Type: application/json`
+- **XML** - `Content-Type: application/xml`
 
-**Supported Content Types**
-- `text/csv` - CSV format
-- `application/json` - JSON format
-- `application/xml` - XML format
-
-### 6.1 CSV Import
-**cURL Example**
-```bash
-curl -X POST http://localhost:3000/tickets/import \
-  -H "Content-Type: text/csv" \
-  --data-binary @sample_tickets.csv
-```
-
-**CSV Format**
+**CSV Format:**
 ```csv
 customer_id,customer_email,customer_name,subject,description,status
-CUST-001,john@example.com,John Doe,Cannot login,Locked out of account,new
-CUST-002,jane@example.com,Jane Smith,Payment failed,Credit card declined,new
+CUST-001,john@example.com,John Doe,Cannot login,Locked out,new
+CUST-002,jane@example.com,Jane Smith,Payment failed,Card declined,new
 ```
 
-### 6.2 JSON Import
-**cURL Example**
-```bash
-curl -X POST http://localhost:3000/tickets/import \
-  -H "Content-Type: application/json" \
-  -d '[
-    {
-      "customer_id": "CUST-001",
-      "customer_email": "john@example.com",
-      "customer_name": "John Doe",
-      "subject": "Cannot login",
-      "description": "Locked out of account",
-      "status": "new"
-    }
-  ]'
+**JSON Format:**
+```json
+[
+  {
+    "customer_id": "CUST-001",
+    "customer_email": "john@example.com",
+    "customer_name": "John Doe",
+    "subject": "Cannot login",
+    "description": "Locked out of account",
+    "status": "new"
+  }
+]
 ```
 
-### 6.3 XML Import
-**cURL Example**
-```bash
-curl -X POST http://localhost:3000/tickets/import \
-  -H "Content-Type: application/xml" \
-  --data-binary @sample_tickets.xml
-```
-
-**XML Format**
+**XML Format:**
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <tickets>
@@ -471,7 +230,7 @@ curl -X POST http://localhost:3000/tickets/import \
 </tickets>
 ```
 
-**Response** (201 Created)
+**Response:** `201 Created`
 ```json
 {
   "summary": {
@@ -479,43 +238,7 @@ curl -X POST http://localhost:3000/tickets/import \
     "successful": 48,
     "failed": 2
   },
-  "tickets": [
-    {
-      "id": "550e8400-e29b-41d4-a716-446655440000",
-      "customer_id": "CUST-001",
-      "customer_email": "john@example.com",
-      "customer_name": "John Doe",
-      "subject": "Cannot login",
-      "description": "Locked out of account",
-      "category": "account_access",
-      "priority": "urgent",
-      "status": "new",
-      "created_at": "2026-02-09T14:32:18.373Z",
-      "updated_at": "2026-02-09T14:32:18.373Z",
-      "resolved_at": null,
-      "assigned_to": null,
-      "tags": [],
-      "metadata": {
-        "source": "api",
-        "browser": null,
-        "device_type": null
-      },
-      "classification": {
-        "category": "account_access",
-        "priority": "urgent",
-        "category_confidence": 0.98,
-        "priority_confidence": 0.95,
-        "overall_confidence": 0.96,
-        "classified_at": "2026-02-09T14:32:18.373Z",
-        "manual_override": false,
-        "reasoning": {
-          "category_reasoning": "Matched 3 keyword(s) for account_access",
-          "priority_reasoning": "Found urgent/important keywords indicating urgent priority"
-        },
-        "keywords_found": ["login", "locked out"]
-      }
-    }
-  ],
+  "tickets": [/* array of created tickets */],
   "errors": [
     {
       "row": 3,
@@ -526,100 +249,58 @@ curl -X POST http://localhost:3000/tickets/import \
 }
 ```
 
+**cURL Examples:**
+```bash
+# CSV Import
+curl -X POST http://localhost:3000/tickets/import \
+  -H "Content-Type: text/csv" \
+  --data-binary @sample_tickets.csv
+
+# JSON Import
+curl -X POST http://localhost:3000/tickets/import \
+  -H "Content-Type: application/json" \
+  -d @sample_tickets.json
+
+# XML Import
+curl -X POST http://localhost:3000/tickets/import \
+  -H "Content-Type: application/xml" \
+  --data-binary @sample_tickets.xml
+```
+
 ---
 
-### 7. AUTO-CLASSIFY TICKET
-Manually trigger automatic classification for a ticket.
+### 7. Auto-Classify Ticket
 
-**Request**
-```
+```http
 POST /tickets/:id/auto-classify
 ```
 
-**Path Parameters**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `id` | string | Ticket UUID |
+Manually trigger automatic classification for an existing ticket.
 
-**cURL Example**
+**Response:** `200 OK` - Returns ticket with updated classification
+
+**cURL:**
 ```bash
 curl -X POST http://localhost:3000/tickets/550e8400-e29b-41d4-a716-446655440000/auto-classify
-```
-
-**Response** (200 OK)
-```json
-{
-  "ticket": {
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "customer_id": "CUST-001",
-    "customer_email": "john@example.com",
-    "customer_name": "John Doe",
-    "subject": "Cannot login to my account",
-    "description": "I have been locked out of my account",
-    "category": "account_access",
-    "priority": "urgent",
-    "status": "new",
-    "created_at": "2026-02-09T14:32:18.373Z",
-    "updated_at": "2026-02-09T14:32:18.373Z",
-    "resolved_at": null,
-    "assigned_to": null,
-    "tags": [],
-    "metadata": {
-      "source": "api",
-      "browser": null,
-      "device_type": null
-    },
-    "classification": {
-      "category": "account_access",
-      "priority": "urgent",
-      "category_confidence": 0.98,
-      "priority_confidence": 0.95,
-      "overall_confidence": 0.96,
-      "classified_at": "2026-02-09T14:32:18.373Z",
-      "manual_override": false,
-      "reasoning": {
-        "category_reasoning": "Matched 3 keyword(s) for account_access",
-        "priority_reasoning": "Found urgent/important keywords indicating urgent priority"
-      },
-      "keywords_found": ["login", "locked out", "password"]
-    }
-  },
-  "classification": {
-    "category": "account_access",
-    "priority": "urgent",
-    "category_confidence": 0.98,
-    "priority_confidence": 0.95,
-    "overall_confidence": 0.96,
-    "classified_at": "2026-02-09T14:32:18.373Z",
-    "manual_override": false,
-    "reasoning": {
-      "category_reasoning": "Matched 3 keyword(s) for account_access",
-      "priority_reasoning": "Found urgent/important keywords indicating urgent priority"
-    },
-    "keywords_found": ["login", "locked out", "password"]
-  }
-}
 ```
 
 ---
 
 ## Data Validation Rules
 
-### Ticket Fields
-
 | Field | Type | Required | Constraints |
 |-------|------|----------|-------------|
-| `customer_id` | string | Yes | Non-empty |
-| `customer_email` | string | Yes | Valid email format |
-| `customer_name` | string | Yes | Non-empty |
-| `subject` | string | Yes | 1-200 characters |
-| `description` | string | Yes | 10-2000 characters |
-| `category` | enum | No | One of: account_access, technical_issue, billing_question, feature_request, bug_report, other |
-| `priority` | enum | No | One of: urgent, high, medium, low |
-| `status` | enum | No | One of: new, in_progress, waiting_customer, resolved, closed |
-| `tags` | array | No | Array of strings |
-| `metadata.source` | enum | No | One of: web_form, email, api, chat, phone |
-| `metadata.device_type` | enum | No | One of: desktop, mobile, tablet |
+| `customer_id` | string | ✅ | Non-empty |
+| `customer_email` | string | ✅ | Valid email format |
+| `customer_name` | string | ✅ | Non-empty |
+| `subject` | string | ✅ | 1-200 characters |
+| `description` | string | ✅ | 10-2000 characters |
+| `category` | enum | ❌ | account_access \| technical_issue \| billing_question \| feature_request \| bug_report \| other |
+| `priority` | enum | ❌ | urgent \| high \| medium \| low |
+| `status` | enum | ❌ | new \| in_progress \| waiting_customer \| resolved \| closed |
+| `tags` | array | ❌ | Array of strings |
+| `metadata.source` | enum | ❌ | web_form \| email \| api \| chat \| phone |
+| `metadata.device_type` | enum | ❌ | desktop \| mobile \| tablet |
 
 ---
 
@@ -627,43 +308,44 @@ curl -X POST http://localhost:3000/tickets/550e8400-e29b-41d4-a716-446655440000/
 
 | Code | Meaning |
 |------|---------|
-| **200** | OK - Request successful |
-| **201** | Created - Resource created successfully |
-| **204** | No Content - Successful DELETE |
-| **400** | Bad Request - Invalid input or validation error |
-| **404** | Not Found - Resource not found |
-| **500** | Internal Server Error - Server error |
+| `200` | OK - Request successful |
+| `201` | Created - Resource created |
+| `204` | No Content - Successful DELETE |
+| `400` | Bad Request - Validation error |
+| `404` | Not Found - Resource not found |
+| `500` | Internal Server Error |
 
 ---
 
-## Rate Limiting
+## Classification System
 
-Currently not implemented. Recommended for production:
-- 100 requests per minute per IP
-- 10 bulk imports per hour per IP
+**Categories:**
+- `account_access` - Login, password, 2FA issues
+- `technical_issue` - Bugs, errors, crashes
+- `billing_question` - Payments, invoices, refunds
+- `feature_request` - Enhancement suggestions
+- `bug_report` - Defects with reproduction steps
+- `other` - Uncategorizable issues
 
----
+**Priorities:**
+- `urgent` - Production issues, security concerns
+- `high` - Blocking issues, time-sensitive
+- `medium` - Standard issues (default)
+- `low` - Minor issues, suggestions
 
-## Best Practices
-
-1. **Always validate email addresses** before sending tickets
-2. **Use meaningful customer IDs** for tracking
-3. **Include metadata** for better context analysis
-4. **Use appropriate statuses** to track ticket lifecycle
-5. **Leverage auto-classification** to reduce manual work
-6. **Monitor confidence scores** to identify borderline classifications
+Each classification includes confidence score (0-1) and reasoning.
 
 ---
 
 ## Examples by Use Case
 
-### Use Case: Support Dashboard
+### Support Dashboard
 ```bash
 # Get all urgent tickets in progress
 curl -X GET "http://localhost:3000/tickets?priority=urgent&status=in_progress"
 ```
 
-### Use Case: Batch Import from CRM
+### Batch Import from CRM
 ```bash
 # Import tickets from CSV export
 curl -X POST http://localhost:3000/tickets/import \
@@ -671,23 +353,37 @@ curl -X POST http://localhost:3000/tickets/import \
   --data-binary @crm_export.csv
 ```
 
-### Use Case: Find Similar Issues
+### Find Similar Issues
 ```bash
-# Search for tickets about login problems
+# Search for login problems
 curl -X GET "http://localhost:3000/tickets?search=login&category=account_access"
 ```
 
-### Use Case: Escalation Process
+### Escalation Process
 ```bash
-# Update ticket to high priority and assign
+# Update priority and assign
 curl -X PUT http://localhost:3000/tickets/550e8400-e29b-41d4-a716-446655440000 \
   -H "Content-Type: application/json" \
-  -d '{
-    "priority": "high",
-    "assigned_to": "senior-support-agent",
-    "status": "in_progress"
-  }'
+  -d '{"priority":"high","assigned_to":"senior-agent","status":"in_progress"}'
 ```
+
+---
+
+## Best Practices
+
+1. ✅ Always validate email addresses before creating tickets
+2. ✅ Use meaningful customer IDs for tracking
+3. ✅ Include metadata for better context analysis
+4. ✅ Leverage auto-classification to reduce manual work
+5. ✅ Monitor confidence scores for borderline classifications
+6. ✅ Use appropriate statuses to track ticket lifecycle
+
+---
+
+## Rate Limiting (Production Recommendation)
+
+- 100 requests per minute per IP
+- 10 bulk imports per hour per IP
 
 ---
 

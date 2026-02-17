@@ -1,51 +1,24 @@
 # 🎧 Intelligent Customer Support System
 
-A robust Node.js/Express application for managing customer support tickets with multi-format import capabilities, automatic categorization, and intelligent priority assignment.
+> **Author:** Andrii Orel  
+> **Course:** AI as a Personalized Coding Partner  
+> **Homework:** #2 - Multi-Format Ticket Import with Auto-Classification
+
+A Node.js/Express application for managing customer support tickets with multi-format import (CSV/JSON/XML), automatic categorization, and intelligent priority assignment.
+
+---
 
 ## ✨ Features
 
-- **Multi-Format Ticket Import**: Import tickets from CSV, JSON, or XML formats
-- **Auto-Classification**: Automatically categorize tickets and assign priorities using AI-powered keyword analysis
-- **RESTful API**: Complete REST API for ticket management (CRUD operations)
-- **Advanced Filtering**: Filter tickets by category, priority, status, and customer
-- **Validation**: Comprehensive input validation using Joi schema validation
-- **In-Memory Storage**: Fast, scalable in-memory data storage
-- **Detailed Logging**: Rich classification reasoning with confidence scores
-- **Performance Optimized**: Handles bulk imports efficiently
+- 🎯 **Multi-Format Import** - CSV, JSON, XML file parsing
+- 🤖 **Auto-Classification** - Keyword-based categorization with confidence scores
+- 📊 **RESTful API** - Complete CRUD operations
+- 🔍 **Advanced Filtering** - Category, priority, status, customer, search
+- ✅ **Input Validation** - Joi schema validation
+- ⚡ **In-Memory Storage** - Fast Map-based data store
+- 📈 **89% Test Coverage** - Comprehensive test suite
 
-## 🏗️ Architecture
-
-```mermaid
-graph TB
-    Client["Client<br/>(API Consumer)"]
-    API["Express API<br/>(Routes)"]
-    
-    subgraph Services["Services Layer"]
-        CS["Classification Service"]
-        Parsers["Data Parsers<br/>(CSV/JSON/XML)"]
-    end
-    
-    subgraph Validation["Validation Layer"]
-        Validator["Ticket Validator"]
-    end
-    
-    subgraph Data["Data Layer"]
-        Model["Ticket Model"]
-        Storage["In-Memory Storage<br/>(Map)"]
-    end
-    
-    Client -->|HTTP| API
-    API --> Services
-    API --> Validation
-    Validation --> Data
-    Services --> Data
-    Model <--> Storage
-    
-    style API fill:#4A90E2
-    style Services fill:#7ED321
-    style Validation fill:#F5A623
-    style Data fill:#BD10E0
-```
+---
 
 ## 🚀 Quick Start
 
@@ -53,133 +26,85 @@ graph TB
 - Node.js >= 16.x
 - npm >= 8.x
 
-### Installation
+### Installation & Running
 
 ```bash
-# Clone the repository
+# Navigate to homework-2
 cd homework-2
 
 # Install dependencies
 npm install
 
-# Start the server
+# Start server
 npm start
 
-# For development with auto-reload
+# Development mode (auto-reload)
 npm run dev
 ```
 
-The API will be available at `http://localhost:3000`
+Server runs at: `http://localhost:3000`
+
+---
 
 ## 📚 Project Structure
 
 ```
 homework-2/
 ├── src/
-│   ├── index.js                 # Express app setup
-│   ├── models/
-│   │   └── ticket.js            # Ticket model with in-memory storage
-│   ├── routes/
-│   │   └── tickets.js           # API endpoints
-│   ├── services/
-│   │   └── classificationService.js  # Auto-classification logic
-│   ├── parsers/
-│   │   ├── csvParser.js         # CSV file parser
-│   │   ├── jsonParser.js        # JSON file parser
-│   │   └── xmlParser.js         # XML file parser
-│   ├── validators/
-│   │   └── ticketValidator.js   # Input validation
-│   └── utils/
-│       └── helpers.js           # Utility functions
+│   ├── index.js                 # Express app
+│   ├── models/ticket.js         # In-memory model
+│   ├── routes/tickets.js        # API endpoints
+│   ├── services/classificationService.js  # Auto-classification
+│   ├── parsers/                 # CSV/JSON/XML parsers
+│   └── validators/ticketValidator.js  # Joi validation
 ├── tests/
-│   ├── test_ticket_api.test.js
-│   ├── test_ticket_model.test.js
-│   ├── test_categorization.test.js
-│   ├── test_import_csv.test.js
-│   ├── test_import_json.test.js
-│   ├── test_import_xml.test.js
-│   ├── test_integration.test.js
-│   ├── test_performance.test.js
-│   └── fixtures/
-│       ├── sample_tickets.csv
-│       ├── sample_tickets.json
-│       └── sample_tickets.xml
+│   ├── test_*.test.js           # Test suites (67 tests)
+│   └── fixtures/                # Sample data files
 ├── docs/
-│   └── screenshots/
+│   ├── API_REFERENCE.md         # Complete API docs
+│   ├── ARCHITECTURE.md          # System design
+│   ├── TESTING_GUIDE.md         # QA guide
+│   └── screenshots/             # Documentation screenshots
 └── package.json
 ```
 
-## 🧪 Testing
+---
 
-### Run Tests
-```bash
-# Run all tests
-npm test
-
-# Run tests with coverage report
-npm run test:coverage
-
-# Run tests in watch mode
-npm run test:watch
-```
-
-### Coverage
-The project maintains **>85% code coverage** across all modules:
-- **Models**: 97% coverage
-- **Services**: 98% coverage
-- **Validators**: 100% coverage
-- **Routes**: 95% coverage
-- **Overall**: 89% coverage
-
-### Test Categories
-- **API Tests**: 11 tests covering all CRUD endpoints
-- **Model Tests**: 9 tests for data validation
-- **Import Tests**: 16 tests (CSV, JSON, XML parsing)
-- **Classification Tests**: 10 tests for auto-categorization
-- **Integration Tests**: 5 end-to-end workflow tests
-- **Performance Tests**: 5 benchmark tests
-
-## 🔧 Technology Stack
-
-| Layer | Technology |
-|-------|-----------|
-| **Runtime** | Node.js |
-| **Framework** | Express.js 5.x |
-| **Validation** | Joi |
-| **CSV Parsing** | csv-parse |
-| **XML Parsing** | xml2js |
-| **Testing** | Jest + Supertest |
-| **Data Storage** | In-Memory Map |
-
-## 📖 API Documentation
-
-See [API_REFERENCE.md](docs/API_REFERENCE.md) for complete API documentation with examples.
-
-## 🏛️ Architecture Deep Dive
-
-See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed architecture diagrams and design decisions.
-
-## 🧪 Testing Guide
-
-See [TESTING_GUIDE.md](docs/TESTING_GUIDE.md) for testing strategies and manual testing procedures.
-
-## 📊 Key Endpoints
+## 📖 API Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/tickets` | Create a new support ticket |
-| GET | `/tickets` | List all tickets (with filtering) |
-| GET | `/tickets/:id` | Get specific ticket |
-| PUT | `/tickets/:id` | Update ticket |
-| DELETE | `/tickets/:id` | Delete ticket |
-| POST | `/tickets/import` | Bulk import from CSV/JSON/XML |
-| POST | `/tickets/:id/auto-classify` | Auto-classify a ticket |
+| `POST` | `/tickets` | Create ticket |
+| `GET` | `/tickets` | List tickets (with filters) |
+| `GET` | `/tickets/:id` | Get ticket by ID |
+| `PUT` | `/tickets/:id` | Update ticket |
+| `DELETE` | `/tickets/:id` | Delete ticket |
+| `POST` | `/tickets/import` | Bulk import (CSV/JSON/XML) |
+| `POST` | `/tickets/:id/auto-classify` | Trigger auto-classification |
+
+**Examples:**
+```bash
+# Create ticket
+curl -X POST http://localhost:3000/tickets \
+  -H "Content-Type: application/json" \
+  -d '{"customer_id":"CUST-001","customer_email":"john@example.com","customer_name":"John Doe","subject":"Cannot login","description":"Locked out after failed attempts","status":"new"}'
+
+# List urgent tickets
+curl -X GET "http://localhost:3000/tickets?priority=urgent"
+
+# Import CSV
+curl -X POST http://localhost:3000/tickets/import \
+  -H "Content-Type: text/csv" \
+  --data-binary @tests/fixtures/sample_tickets.csv
+```
+
+See [API_REFERENCE.md](docs/API_REFERENCE.md) for complete documentation.
+
+---
 
 ## 🤖 Classification System
 
-The system uses intelligent keyword-based classification:
-
-**Categories**:
+**Categories:**
 - `account_access` - Login, password, 2FA issues
 - `technical_issue` - Bugs, errors, crashes
 - `billing_question` - Payments, invoices, refunds
@@ -187,119 +112,172 @@ The system uses intelligent keyword-based classification:
 - `bug_report` - Defects with reproduction steps
 - `other` - Uncategorizable issues
 
-**Priorities**:
+**Priorities:**
 - `urgent` - Production issues, security concerns
 - `high` - Blocking issues, time-sensitive
 - `medium` - Standard issues (default)
 - `low` - Minor issues, suggestions
 
-Each classification includes a confidence score (0-1) and detailed reasoning.
+Each classification includes:
+- Confidence scores (0-1)
+- Matched keywords
+- Reasoning explanation
 
-## 🔒 Data Model
+---
 
-```json
-{
-  "id": "UUID",
-  "customer_id": "string",
-  "customer_email": "email@example.com",
-  "customer_name": "string",
-  "subject": "string (1-200 chars)",
-  "description": "string (10-2000 chars)",
-  "category": "account_access | technical_issue | billing_question | feature_request | bug_report | other",
-  "priority": "urgent | high | medium | low",
-  "status": "new | in_progress | waiting_customer | resolved | closed",
-  "created_at": "2026-02-09T14:32:18.373Z",
-  "updated_at": "2026-02-09T14:32:18.373Z",
-  "resolved_at": null,
-  "assigned_to": null,
-  "tags": ["array", "of", "strings"],
-  "metadata": {
-    "source": "web_form | email | api | chat | phone",
-    "browser": "Chrome 120",
-    "device_type": "desktop | mobile | tablet"
-  },
-  "classification": {
-    "category": "bug_report",
-    "priority": "high",
-    "category_confidence": 0.95,
-    "priority_confidence": 0.85,
-    "overall_confidence": 0.90,
-    "classified_at": "2026-02-09T14:32:18.373Z",
-    "manual_override": false,
-    "reasoning": {
-      "category_reasoning": "Matched 4 keyword(s) for bug_report",
-      "priority_reasoning": "Found urgent/important keywords indicating high priority"
-    },
-    "keywords_found": ["bug", "error", "crash"]
-  }
-}
+## 🧪 Testing
+
+```bash
+# Run all tests (67 tests)
+npm test
+
+# Coverage report (89%)
+npm run test:coverage
+
+# Watch mode
+npm run test:watch
 ```
 
-## 💡 Performance Characteristics
+### Test Coverage
 
-| Operation | Avg Time |
+| Module | Coverage |
+|--------|----------|
+| Models | 97% |
+| Services | 98% |
+| Validators | 100% |
+| Routes | 95% |
+| **Overall** | **89%** |
+
+**Test Categories:**
+- API Tests: 11 tests
+- Model Tests: 9 tests
+- Classification Tests: 10 tests
+- Import Tests: 16 tests (CSV/JSON/XML)
+- Integration Tests: 5 tests
+- Performance Tests: 5 tests
+
+See [TESTING_GUIDE.md](docs/TESTING_GUIDE.md) for details.
+
+---
+
+## 🏗️ Architecture
+
+```mermaid
+graph TB
+    Client["Client"] -->|HTTP| API["Express API"]
+    API --> Validation["Joi Validation"]
+    API --> Services["Services<br/>(Classification, Parsers)"]
+    Services --> Model["Ticket Model"]
+    Model --> Storage["In-Memory Map"]
+    
+    style API fill:#4A90E2
+    style Services fill:#7ED321
+    style Model fill:#BD10E0
+    style Storage fill:#F5A623
+```
+
+**Key Design Decisions:**
+- **In-Memory Storage**: Fast O(1) lookups, ideal for dev/testing
+- **Keyword-Based Classification**: No ML dependencies, deterministic results
+- **Joi Validation**: Industry standard, comprehensive error messages
+- **Separate Parsers**: Easy to extend with new formats
+
+See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for deep dive.
+
+---
+
+## 🔧 Technology Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Runtime | Node.js 16+ |
+| Framework | Express.js 5.x |
+| Validation | Joi |
+| CSV Parsing | csv-parse |
+| XML Parsing | xml2js |
+| Testing | Jest + Supertest |
+| Storage | In-Memory Map |
+
+---
+
+## 📊 Performance
+
+| Operation | Duration |
 |-----------|----------|
 | Create ticket | <5ms |
 | Bulk import (100 tickets) | ~50ms |
-| List tickets | <1ms |
-| Filter tickets | <1ms |
+| List/filter tickets | <1ms |
 | Auto-classification | <2ms |
 
-## 🔄 Data Flow
+---
 
-1. **Import**: Client sends CSV/JSON/XML → Parser converts to objects
-2. **Validation**: Validator checks schema and constraints
-3. **Storage**: Valid tickets stored in in-memory Map
-4. **Classification**: Keywords analyzed and category/priority assigned
-5. **Response**: Client receives ticket with classification details
+## 📦 Sample Data
+
+Located in `tests/fixtures/`:
+- `sample_tickets.csv` - 50 tickets
+- `sample_tickets.json` - 20 tickets
+- `sample_tickets.xml` - 30 tickets
+- `invalid_tickets.*` - Test invalid data
+
+---
 
 ## 🛠️ Development
 
-### Running in Development Mode
+### Recommended Setup
 ```bash
-npm run dev
-```
+# Install dev dependencies
+npm install --save-dev eslint prettier
 
-### Linting (recommended)
-```bash
-# Install eslint
-npm install --save-dev eslint
-
-# Create config
+# Create .eslintrc.json
 npx eslint --init
 
 # Run linter
 npx eslint src/
 ```
 
-## 📝 Sample Data
+### Environment Variables
+```bash
+# Optional: Change port (default: 3000)
+export PORT=3001
+npm start
+```
 
-Sample data files are available in `tests/fixtures/`:
-- `sample_tickets.csv` - 50 sample tickets in CSV format
-- `sample_tickets.json` - 20 sample tickets in JSON format
-- `sample_tickets.xml` - 30 sample tickets in XML format
+---
 
-## 🚨 Error Handling
+## 📝 Documentation
 
-The API returns appropriate HTTP status codes:
-- **201** - Created (successful POST)
-- **400** - Bad Request (validation error)
-- **404** - Not Found (ticket doesn't exist)
-- **500** - Internal Server Error
+- [API_REFERENCE.md](docs/API_REFERENCE.md) - Complete API documentation
+- [ARCHITECTURE.md](docs/ARCHITECTURE.md) - System design & architecture
+- [TESTING_GUIDE.md](docs/TESTING_GUIDE.md) - Testing guide for QA
 
-All error responses include descriptive error messages.
+---
+
+## 🤖 AI Tools Used
+
+- **GitHub Copilot** - Code generation, test writing
+- **Claude Code** - Architecture planning, documentation
+- **Context7** - API design patterns, best practices
+
+---
+
+## 📸 Screenshots
+
+- [Clarification](docs/screenshots/clarification.png) - AI interaction for requirements
+- [Plan](docs/screenshots/plan.png) - Implementation planning
+- [Test Coverage](docs/screenshots/test_coverage.png) - 89% coverage report
+
+---
 
 ## 📄 License
 
 ISC
 
-## 👤 Author
-
-Created as part of AI Coding Partner Homework-2
-
 ---
 
-**Last Updated**: February 2026
+<div align="center">
 
-For more details, see the full [API_REFERENCE.md](docs/API_REFERENCE.md), [ARCHITECTURE.md](docs/ARCHITECTURE.md), and [TESTING_GUIDE.md](docs/TESTING_GUIDE.md).
+**Created with AI assistance as part of AI Coding Partner course**  
+*Last Updated: February 2026*
+
+</div>
 
